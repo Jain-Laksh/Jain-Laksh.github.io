@@ -9,6 +9,6 @@ export default defineConfig({
       ignored: ['**/*.pdf'],
     },
   },
-  // Relative base works automatically on both username.github.io and username.github.io/<repo-name>
-  base: process.env.BASE_URL || './',
+  // Root domain for Jain-Laksh.github.io
+  base: '/',
 });
