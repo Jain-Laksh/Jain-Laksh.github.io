@@ -1,0 +1,56 @@
+[
+  {
+    "id": "news-0",
+    "date": "2026-10-09",
+    "content": "🚀 Selected as upcoming Software Development Engineer (SDE) at Eternal!",
+    "link": null
+  },
+  {
+    "id": "news-1",
+    "date": "2026-05-17",
+    "content": "📄 Our research paper ThermEval was accepted at KDD 2026 (Datasets & Benchmarks Track, A* Conference)!",
+    "link": "https://sustainability-lab.github.io/thermeval/"
+  },
+  {
+    "id": "news-2",
+    "date": "2026-01-10",
+    "content": "👨‍🏫 Appointed Teaching Assistant for CS203: Software Tools & Techniques for AI at IIT Gandhinagar.",
+    "link": null
+  },
+  {
+    "id": "news-3",
+    "date": "2025-12-22",
+    "content": "🥈 Won the Silver Medal at Inter-IIT Tech Meet 14.0 (IIT Patna) for ISRO's GeoNLI challenge among 23 IITs!",
+    "link": "https://github.com/Jain-Laksh/GeoNLI-Team-58/"
+  },
+  {
+    "id": "news-4",
+    "date": "2025-08-05",
+    "content": "💼 Accepted offer to join Barclays (Investment Banking Division) as an AI Engineer Intern.",
+    "link": null
+  },
+  {
+    "id": "news-5",
+    "date": "2025-05-02",
+    "content": "🔬 Began Summer Research Internship (SRIP) with Prof. Nipun Batra on Vision-Language Model evaluation on thermal imagery.",
+    "link": "https://sustainability-lab.github.io/thermeval/"
+  },
+  {
+    "id": "news-6",
+    "date": "2025-04-20",
+    "content": "🎖️ Awarded Academic Citation for Semester IV at IITGN, recognizing the top 5 students in the AI branch.",
+    "link": null
+  },
+  {
+    "id": "news-7",
+    "date": "2024-12-18",
+    "content": "⚖️ Built CourtRAG multi-agent legal simulation system for Inter-IIT Tech Meet 13.0 @ IIT Bombay.",
+    "link": "https://github.com/Jain-Laksh/Inter-IIT-High-Prep-Pathway-CourtSimulator"
+  },
+  {
+    "id": "news-8",
+    "date": "2023-08-01",
+    "content": "🎓 Commenced B.Tech in Artificial Intelligence at Indian Institute of Technology, Gandhinagar!",
+    "link": null
+  }
+]

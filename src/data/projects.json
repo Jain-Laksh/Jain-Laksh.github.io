@@ -1,0 +1,286 @@
+[
+  {
+    "id": "adas-system",
+    "title": "ML Augmented ADAS Longitudinal Control Stack",
+    "description": "Engineered an ML-augmented longitudinal control stack for Autonomous Driving Systems. Integrated LightGBM acceleration prediction with Model Predictive Control (MPC) via cvxpy and Kalman Filtering, incorporating conformal prediction for statistical safety guarantees under sensor noise and variable road conditions.",
+    "tags": [
+      "Autonomous Driving",
+      "Control Systems"
+    ],
+    "github": "https://github.com/Jain-Laksh/ADAS-System",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2026,
+    "date": "2026-09"
+  },
+  {
+    "id": "lob-reconstruction",
+    "title": "Limit Order Book Reconstruction & Market Making",
+    "description": "Reconstructed a 10-level AAPL Limit Order Book from 100K LOBSTER events, tracking individual orders with price-time priority. Engineered order-book imbalance, OFI, spread, returns, and volatility across multi-event horizons. Trained HistGradientBoosting models (0.38 Macro-F1) and backtested inventory-aware quoting, reducing maximum inventory by 84% with +$305.74 net PnL.",
+    "tags": [
+      "Quantitative Finance",
+      "Order Book"
+    ],
+    "github": "https://github.com/Jain-Laksh/LOB-Reconstruction-and-Market-Making",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2026,
+    "date": "2026-08"
+  },
+  {
+    "id": "hnsw-optimization",
+    "title": "Hierarchical Navigable Small World (HNSW) Graph Optimization",
+    "description": "Designed deterministic insertion-ordering strategies (Z-Order, centroid sorting, BM25 seeding) for HNSW graphs, cutting build time by up to 15.8% on SIFT-1M and Wikipedia benchmarks without recall loss. Built a PCA/VAE latent-space compression pipeline with reranking, reducing index memory by 31% at Recall@10 = 0.99. Developed 3 learned graph-construction policies validated across 38 benchmark runs, improving low-budget recall by +0.02 and cutting latency by 47%.",
+    "tags": [
+      "Vector Search",
+      "Graph Algorithms"
+    ],
+    "github": "https://github.com/Jain-Laksh/datascience-learned-hnsw/",
+    "website": null,
+    "report": "https://github.com/Jain-Laksh/datascience-learned-hnsw/blob/main/HNSW_Optimization_Report_ACL.pdf",
+    "image": null,
+    "featured": false,
+    "year": 2026,
+    "date": "2026-04",
+    "advisor": "Prof. Anirban Dasgupta"
+  },
+  {
+    "id": "iitgn-connect",
+    "title": "IITGN Connect — Full-Stack Platform with Custom B+ Tree DB Engine",
+    "description": "Engineered a B+ Tree-backed database engine from scratch in Python implementing insert, delete, exact-match, and range queries with automatic split/merge rebalancing (O(log n) lookups). Implemented ACID transactions with write-ahead logging and crash recovery. Shipped a full-stack campus platform with a 23-table MySQL schema, 70 REST endpoints, JWT auth, RBAC, and tuned 26 MySQL indexes cutting latency by up to 99.6% (tested via Locust with 1000 requests, 0 failures).",
+    "tags": [
+      "Database Systems",
+      "Full-Stack"
+    ],
+    "github": "https://github.com/Jain-Laksh/IITGN-Connect",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": true,
+    "year": 2026,
+    "date": "2026-04",
+    "advisor": "Prof. Yogesh Meena"
+  },
+  {
+    "id": "geonli-isro",
+    "title": "GeoNLI — Natural Language Interpretation of Satellite Imagery",
+    "description": "Built an end-to-end neuro-symbolic pipeline for satellite imagery captioning, visual grounding, and VQA with geometric reasoning. Fine-tuned Qwen3-VL for caption generation and VQA, and integrated SAM3 for oriented object localization. Achieved ~2× improvement over prior SOTA on VRSBench (Acc@0.7 = 31.3%) via a localize, refine, and reason pipeline disambiguating visually similar objects. Won Silver Medal at Inter-IIT Tech Meet 14.0 for ISRO among 23 IITs.",
+    "tags": [
+      "Multimodal ML",
+      "Vision-Language",
+      "Inter-IIT"
+    ],
+    "github": "https://github.com/Jain-Laksh/GeoNLI-Team-58/",
+    "website": null,
+    "report": "https://iitgnacin-my.sharepoint.com/:f:/g/personal/23110185_iitgn_ac_in/IgANvvU-Hu5yT616__4hRAPKAUEGl_Iotz5fWw8licLrKo4?e=FlMFha",
+    "image": null,
+    "featured": true,
+    "year": 2025,
+    "date": "2025-12",
+    "badge": "Silver Medal @ Inter-IIT Tech Meet 14.0"
+  },
+  {
+    "id": "multiagent-rl-cartpole",
+    "title": "Comparative Analysis of Reinforcement Learning Agents",
+    "description": "Implemented and benchmarked Value-Based (DQN, Double DQN, SARSA) and Policy-Based (REINFORCE with Baseline, Actor-Critic) algorithms on CartPole-v1. Formulated Bellman optimality TD-error minimization, target networks, and experience replay to eliminate overestimation bias and stabilize convergence.",
+    "tags": [
+      "Reinforcement Learning",
+      "PyTorch"
+    ],
+    "github": "https://github.com/Jain-Laksh/Multiagent-Systems-Project",
+    "website": null,
+    "report": "https://github.com/Jain-Laksh/Multiagent-Systems-Project/blob/main/report.pdf",
+    "image": null,
+    "featured": false,
+    "year": 2025,
+    "date": "2025-11"
+  },
+  {
+    "id": "layer-merging",
+    "title": "Layer Merging via Manifold Alignment for Model Compression",
+    "description": "Extended manifold-based layer merging (MKA) for LLM compression, reproducing Llama3-8B results with 43.75% compression and only 2.8% accuracy drop. Experimented with trainable merge weights (α), task/language-specific layer similarity, and neural alignment before merging to mitigate neuron misalignment, enabling stable merging of 13–15 layers with significantly better accuracy retention than naive averaging.",
+    "tags": [
+      "Model Compression",
+      "NLP"
+    ],
+    "github": "https://github.com/Jain-Laksh/Layer-Merging-via-Manifold-Alignment",
+    "website": "https://nishchaybhutoria.github.io/cs613-project-website",
+    "report": "https://iitgnacin-my.sharepoint.com/:b:/g/personal/23110185_iitgn_ac_in/IQAvlyq50aiLRpPgZTuiUIVNAVAmO8fTnP8yC1sC9dnHvuc?e=ZgXDgY",
+    "image": null,
+    "featured": true,
+    "year": 2025,
+    "date": "2025-11",
+    "advisor": "Prof. Mayank Singh"
+  },
+  {
+    "id": "amazon-ml-challenge-2025",
+    "title": "Multimodal Product Price Prediction — Amazon ML Challenge 2025",
+    "description": "Framed product price prediction as a multimodal supervised regression task across text and imagery. Extracted vision representations (SigLIP) and LLM sentence embeddings (Stella, Qwen, Gemma), combining deep-wide MLPs in PyTorch with XGBoost gradient boosting and Optuna tuning, achieving rank 241 on the leaderboard.",
+    "tags": [
+      "Multimodal ML",
+      "Competitive ML"
+    ],
+    "github": "https://github.com/Jain-Laksh/Amazon-ML-Challenge-2025",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2025,
+    "date": "2025-10",
+    "badge": "Rank 241 / 75,000+ @ Amazon ML Challenge"
+  },
+  {
+    "id": "vistavox",
+    "title": "VistaVox — Real-Time AI Travel Companion for the Visually Impaired",
+    "description": "Ideated and built a real-time AI travel companion that vividly narrates real-world surroundings for visually impaired individuals. Fine-tuned SmolVLM-500M with QLoRA on a custom-curated dataset of 1,500+ image-narrative pairs, improving cross-entropy loss from 3.1 to 0.9. Quantized to GGUF format and deployed locally on an Intel i5 CPU with 8GB RAM using llama.cpp and FastAPI for ultra-low latency inference.",
+    "tags": [
+      "Multimodal ML",
+      "Vision-Language",
+      "Edge AI"
+    ],
+    "github": "https://github.com/Jain-Laksh/VistaVox",
+    "website": "https://huggingface.co/Laksh-Jain/SmolVLM500M-qlora-vivid-descriptions-GGUF",
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2025,
+    "date": "2025-06"
+  },
+  {
+    "id": "verilog-processor-design",
+    "title": "Designing a Single-Cycle Processor in Verilog",
+    "description": "Designed and simulated a single-cycle processor architecture from fundamental digital logic principles in Verilog HDL. Built core datapath modules including ALU, accumulator, control unit, register file, and instruction memory with testbench waveform verification.",
+    "tags": [
+      "Verilog",
+      "Computer Architecture"
+    ],
+    "github": "https://github.com/Jain-Laksh/Designing-a-Processor",
+    "website": null,
+    "report": "https://github.com/Jain-Laksh/Designing-a-Processor/blob/main/processor_schematic.pdf",
+    "image": null,
+    "featured": false,
+    "year": 2025,
+    "date": "2025-05"
+  },
+  {
+    "id": "yolo-v1-from-scratch",
+    "title": "YOLO v1 Object Detection Architecture from Scratch",
+    "description": "Implemented the foundational YOLO v1 (You Only Look Once) architecture and custom multi-part loss function from scratch using PyTorch and NumPy. Engineered 7×7 grid tensor encoding, bounding box coordinate regression with square-root dimensions, confidence scoring, and class probability heads.",
+    "tags": [
+      "Computer Vision",
+      "PyTorch"
+    ],
+    "github": "https://github.com/Jain-Laksh/YOLO-implementation-from-scratch",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2025,
+    "date": "2025-01"
+  },
+  {
+    "id": "courtrag",
+    "title": "CourtRAG — Multi-Agentic RAG System to Simulate Court Proceedings",
+    "description": "Built a robust system for analyzing legal case files, coordinating retrieval, reasoning, verification, and decision stages via an explicit state graph (LangGraph) to simulate court proceedings and generate judge-like verdicts. Developed an end-to-end RAG pipeline with automated case ingestion, segregated public/private data stores, human-in-the-loop validation, rate limit failover, independent fact-checking guardrails, and Docker deployment.",
+    "tags": [
+      "Multi-Agent",
+      "RAG",
+      "Inter-IIT"
+    ],
+    "github": "https://github.com/Jain-Laksh/Inter-IIT-High-Prep-Pathway-CourtSimulator",
+    "website": null,
+    "report": "https://iitgnacin-my.sharepoint.com/:b:/g/personal/23110185_iitgn_ac_in/ETBWkq4uMvZMpu1AaLaVVcQB_MAgfJehO_mJCxWnFNFuoA?e=Bmdi4H",
+    "image": null,
+    "featured": false,
+    "year": 2024,
+    "date": "2024-12",
+    "badge": "Pathway @ Inter-IIT Tech Meet 13.0"
+  },
+  {
+    "id": "2d-pokemon-game",
+    "title": "2D Text-Based Pokémon Game",
+    "description": "Developed a text-based 2D Pokémon game in Python featuring ASCII grid map exploration, wild Pokémon encounters, turn-based battle mechanics with move sets and damage calculations, and inventory/team management.",
+    "tags": [
+      "Python",
+      "Game Development"
+    ],
+    "github": "https://github.com/Jain-Laksh/2D-Pokemon-game",
+    "website": null,
+    "report": "https://github.com/Jain-Laksh/2D-Pokemon-game/blob/main/Documentation%20Pokemon%20Game.pdf",
+    "image": null,
+    "featured": false,
+    "year": 2024,
+    "date": "2024-11"
+  },
+  {
+    "id": "text-generator-mlp",
+    "title": "Autoregressive Text Generator based on MLP",
+    "description": "Engineered an autoregressive next-word prediction model based on preceding k words trained on War and Peace and Wikipedia corpora across various embedding configurations. Deployed an interactive Streamlit application enabling real-time experimentation with embedding dimensions, context window sizes, and generation sampling strategies.",
+    "tags": [
+      "NLP",
+      "Deep Learning"
+    ],
+    "github": "https://github.com/Jain-Laksh/ES335-assignment-3",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2024,
+    "date": "2024-10",
+    "advisor": "Prof. Nipun Batra"
+  },
+  {
+    "id": "image-processing-superres",
+    "title": "Image Processing & Super Resolution with Machine Learning",
+    "description": "Trained linear regression models for image reconstruction, incorporating Random Fourier Features (RFF) to reduce reconstruction loss from 0.14 to ~0.00, achieving RMSE of 0.015 and PSNR of 36. Applied Matrix Factorization for reconstruction and compression, and increased image resolution by a factor of 2x using RFF and linear models.",
+    "tags": [
+      "Image Processing",
+      "Machine Learning"
+    ],
+    "github": "https://github.com/Jain-Laksh/ES335-assignment-2",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2024,
+    "date": "2024-09",
+    "advisor": "Prof. Nipun Batra"
+  },
+  {
+    "id": "uci-har-timeseries",
+    "title": "Supervised & Unsupervised Time Series Analysis on UCI-HAR Dataset",
+    "description": "Analyzed the UCI-HAR dataset containing time-series sensor data of 30 subjects across 6 activities. Applied Diffusion Maps and K-Means clustering (ARI 0.42, silhouette 0.68, outperforming PCA and t-SNE baselines). Extracted kinematic features via TSFEL and trained custom decision tree models validated on real-world activity data from Physics Toolbox Suite (70% precision, 61% accuracy).",
+    "tags": [
+      "Time Series",
+      "Clustering"
+    ],
+    "github": "https://github.com/Jain-Laksh/Diffusion-Maps-on-UCI-HAR-Dataset",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2024,
+    "date": "2024-08",
+    "advisor": "Prof. Nipun Batra"
+  },
+  {
+    "id": "youtube-transcript-scraper",
+    "title": "YouTube Channel Multi-Lingual Transcript Scraper",
+    "description": "Built an automated Python web scraping tool to extract and archive multi-lingual video transcripts across entire YouTube channels using only channel IDs. Integrated scrapetube and youtube-transcript-api with automated batching and plain-text file export.",
+    "tags": [
+      "Python",
+      "Web Scraping"
+    ],
+    "github": "https://github.com/Jain-Laksh/youtube_transcript_scrapper",
+    "website": null,
+    "report": null,
+    "image": null,
+    "featured": false,
+    "year": 2024,
+    "date": "2024-05"
+  }
+]

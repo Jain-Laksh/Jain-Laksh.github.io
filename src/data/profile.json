@@ -1,0 +1,152 @@
+{
+  "name": "Laksh Jain",
+  "firstName": "Laksh",
+  "lastName": "Jain",
+  "initials": "LJ",
+  "title": "AI Researcher & Software Engineer",
+  "status": "Upcoming SDE @ Eternal",
+  "thoughtBubble": {
+    "enabled": false,
+    "badge": "#OpenToWork",
+    "text": "Looking for internship opportunities for",
+    "highlight": "Jan–June 2027",
+    "link": "/connect",
+    "tooltip": "Looking for internship opportunities • Click to connect or view CV"
+  },
+  "institution": "Indian Institute of Technology, Gandhinagar",
+  "institutionShort": "IIT Gandhinagar",
+  "department": "Artificial Intelligence",
+  "year": "Senior Undergraduate (2023–2027)",
+  "cpi": "9.05 / 10.0",
+  "email": "1511.lakshjain@gmail.com",
+  "secondaryEmail": "laksh.jain@iitgn.ac.in",
+  "phone": "+91 6362588608",
+  "bio": [
+    "I am a Senior Undergraduate in Artificial Intelligence at **IIT Gandhinagar** and an incoming **Software Development Engineer (SDE) at Eternal**. My work centers on **multimodal learning & reasoning**, **model explainability**, and engineering **efficient ML systems**.",
+    "My research has been published at top-tier venues including **KDD 2026**, and I previously engineered enterprise AI microservices as an intern at **Barclays (Investment Banking Division)**. Competing among 23 IITs, I also won a **Silver Medal at Inter-IIT Tech Meet 14.0** for ISRO's geospatial challenge.",
+    "When I'm away from code, I love solving puzzles and playing chess *(HMU anytime for a game!)* I thrive on positive, intellectual discussions, hitting the gym *(sometimes :P)*, watching sci-fi and dystopian shows, keeping up with the latest tech gadgets, and gaming."
+  ],
+  "shortBio": "Upcoming SDE @ Eternal. Senior Undergrad in AI @ IIT Gandhinagar (2023-2027). KDD 2026. Former AI Intern @ Barclays. Silver @ InterIIT TechMeet 14.",
+  "profileImage": "/images/profile.jpg",
+  "cvFile": "/cv.pdf",
+  "location": "Gandhinagar, Gujarat & Bengaluru, Karnataka, India",
+  "collegeLocation": "Gandhinagar, Gujarat, India",
+  "hometown": "Bengaluru, Karnataka, India",
+  "education": [
+    {
+      "degree": "Bachelor of Technology in Artificial Intelligence",
+      "institution": "Indian Institute of Technology, Gandhinagar",
+      "period": "Aug 2023 — May 2027",
+      "grade": "CGPA: 9.05 / 10.0",
+      "details": "Dean's List Award (Sem I) & Academic Citation (Sem IV, top 5 students in AI branch)."
+    },
+    {
+      "degree": "Class XII (CBSE) — Physics, Maths, Computer Science",
+      "institution": "Narayana Junior College, Bengaluru",
+      "period": "June 2022 — May 2023",
+      "grade": "96.4%",
+      "details": "AIR 1906 in JEE Advanced 2023 (top 1% out of 189,744) & State Rank 136 in KCET (out of 261,610)."
+    },
+    {
+      "degree": "Class X (CBSE)",
+      "institution": "Sindhi High School, Bengaluru",
+      "period": "June 2020 — May 2021",
+      "grade": "95.0%",
+      "details": "Distinction in Science, Mathematics and Computer Applications."
+    }
+  ],
+  "socials": {
+    "github": "https://github.com/Jain-Laksh",
+    "linkedin": "https://www.linkedin.com/in/lakshjain2005/",
+    "googleScholar": "https://scholar.google.com/citations?user=4oB8wmcAAAAJ&hl=en",
+    "email": "1511.lakshjain@gmail.com"
+  },
+  "researchInterests": [
+    {
+      "title": "Vision-Language Models and Multimodal Reasoning",
+      "icon": "vision"
+    },
+    {
+      "title": "Model Compression and Inference",
+      "icon": "rl"
+    },
+    {
+      "title": "AI Explainability",
+      "icon": "ethics"
+    },
+    {
+      "title": "Software Engineering & ML Systems",
+      "icon": "language"
+    }
+  ],
+  "researchBackground": [
+    "Modern vision-language models demonstrate impressive conversational fluency, yet beneath this capability lies a profound fragility: they heavily rely on statistical language priors over perceptual grounding. In my research leading **ThermEval** (accepted at **KDD 2026**), we systematically evaluated 25 foundation models (ranging from 0.3B to 235B parameters, including the Gemini 2.5 and Gemini 3 families) on physical thermal imagery. Because thermal imagery encodes physical temperature rather than typical RGB color and texture cues, models cannot rely on surface-level visual shortcuts. The empirical findings were unequivocal: models consistently defaulted to **text-based priors** (such as guessing 'normal' body temperatures) rather than extracting the thermal signal. Crucially, **scaling model capacity did not resolve the benchmark**, and fine-tuning an 8B model still exhibited persistent error floors. Prerequisite structural failures like misinterpreting the colorbar calibration scale, invariably cascaded into severe errors on downstream temperature reasoning. This led to a defining conclusion: *the primary bottleneck in multimodal intelligence is not parameter scale or raw compute, but perceptual grounding itself.*",
+    "This disconnect between linguistic fluency and sensory grounding directly motivates the questions at the core of my research. Within **Vision-Language Models & Multimodal Reasoning**, I investigate how architectures can build authentic representations over non-canonical modalities — from continuous physical thermal fields to dense spatial geometries in satellite imagery (as in our Silver Medal-winning **GeoNLI** neuro-symbolic system for ISRO). How can we enforce cross-modal alignment so models reason over sensory evidence rather than hallucinating from linguistic associations? In parallel, this drives my focus on **AI Explainability**: constructing diagnostic, task-ordered evaluation pipelines that isolate precisely *where* multimodal reasoning collapses — from foundational scale calibration to high-level deduction — turning black-box evaluations into verifiable scientific insights.",
+    "I have also explored **model compression and inference** — investigating knowledge-based manifold alignment (layer merging on LLaMA-3-8B) and on-device quantization (GGUF) to preserve expressive capacity under aggressive compute limits. Coupled with my experience engineering production AI microservices and high-throughput retrieval pipelines at Barclays, my research philosophy bridges **rigorous empirical science, interpretability, and robust ML systems** to build models that not only reason faithfully, but perform reliably in deployment."
+  ],
+  "technicalSkills": {
+    "languages": [
+      "Python",
+      "C++",
+      "C",
+      "SQL"
+    ],
+    "tools": [
+      "Git",
+      "GitHub",
+      "GitLab",
+      "VS Code",
+      "Azure (Blob Storage, Functions, Containers, AI Foundry)",
+      "Docker",
+      "Linux"
+    ],
+    "frameworks": [
+      "PyTorch",
+      "HuggingFace",
+      "FastAPI",
+      "Pandas",
+      "Scikit-Learn",
+      "PEFT",
+      "Weights & Biases",
+      "LangGraph",
+      "Flask",
+      "Streamlit"
+    ]
+  },
+  "coursework": [
+    "Machine Learning",
+    "Deep Learning",
+    "Data Science",
+    "Maths for AI",
+    "Natural Language Processing",
+    "Computer Vision",
+    "Operating Systems",
+    "Database Management Systems",
+    "Computer Architecture",
+    "Digital Systems",
+    "Human Computer Interaction",
+    "Linear Algebra",
+    "Calculus",
+    "Probability and Statistics"
+  ],
+  "positionsOfResponsibility": [
+    {
+      "role": "Teaching Assistant for Software Tools & Techniques for AI",
+      "organization": "IIT Gandhinagar",
+      "period": "Jan 2026 — Apr 2026",
+      "details": "Guided 160+ students in applying AI frameworks and programming tools through hands-on lab sessions; designed assignments and evaluated coursework."
+    },
+    {
+      "role": "Class Representative — AI Batch 2023",
+      "organization": "IIT Gandhinagar",
+      "period": "May 2025 — Apr 2026",
+      "details": "Elected by a batch of 35+ students as the Class Representative for the AI Batch of 2023; resolved academic and scheduling challenges in liaison with faculty."
+    },
+    {
+      "role": "Core Member, Machine Learning Club",
+      "organization": "IIT Gandhinagar",
+      "period": "Nov 2024 — Present",
+      "details": "Conducted an Agentic RAG workshop for 30+ participants in Sociohack (BlithChron); ML problem-setter for HackRush; authored material for ML Winter School."
+    }
+  ]
+}

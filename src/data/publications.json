@@ -1,0 +1,35 @@
+[
+  {
+    "id": "thermeval-kdd2026",
+    "title": "ThermEval — A Structured Benchmark for Evaluation of Vision-Language Models on Thermal Imagery",
+    "authors": [
+      "Ayush Shrivastava",
+      "Kirtan Gagani*",
+      "Laksh Jain*",
+      "Mayank Goel",
+      "Nipun Batra"
+    ],
+    "equalContribution": "* Equal contribution",
+    "venue": "KDD 2026 (Accepted, Poster — Datasets & Benchmarks Track, A* Conference)",
+    "venueShort": "KDD 2026",
+    "venueType": "conference",
+    "year": 2026,
+    "date": "2026-02-15",
+    "abstract": "Developed a large-scale benchmark of 70,000+ VQA samples across 25 open and closed-source Vision-Language Models (0.3B–235B parameters, including Phi, Qwen-VL, and Gemini) to systematically evaluate reasoning capabilities on thermal imagery. Built an end-to-end evaluation pipeline with an LLM-based output parser validated on 1,200 gold samples (>98% human agreement). Uncovered that VLMs reliably identify thermal images as a modality but consistently fail at temperature-grounded reasoning by defaulting to language priors (e.g., assuming 'normal' body temperature regardless of pixel color). Proved that this grounding issue is not solved merely by scale, as failures persist up to 235B parameters. Demonstrated that fine-tuning with a LoRA-tuned 8B model closes much of the gap, approaching human performance.",
+    "tags": [
+      "Vision-Language",
+      "Benchmarking",
+      "KDD 2026"
+    ],
+    "links": {
+      "paper": "https://dl.acm.org/doi/pdf/10.1145/3770855.3817469",
+      "website": "https://sustainability-lab.github.io/thermeval/",
+      "code": "https://github.com/AyushShrivstava/ThermEval_KDD",
+      "dataset": "https://www.kaggle.com/datasets/shriayush/thermeval",
+      "slides": null
+    },
+    "bibtex": "@inproceedings{shrivastava2026thermeval,\n        author    = {Ayush Shrivastava and Kirtan Gangani and Laksh Jain and Mayank Goel and Nipun Batra},\n        title     = {ThermEval: A Structured Benchmark for Evaluation of Vision-Language Models on Thermal Imagery},\n        booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2},\n        series    = {KDD '26},\n        year      = {2026},\n        location  = {Jeju Island, Republic of Korea},\n        publisher = {ACM},\n        doi       = {10.1145/3770855.3817469},\n        url       = {https://doi.org/10.1145/3770855.3817469}\n        }",
+    "advisor": "Prof. Nipun Batra, IIT Gandhinagar",
+    "featured": true
+  }
+]

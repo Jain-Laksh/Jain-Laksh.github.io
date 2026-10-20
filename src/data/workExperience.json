@@ -1,0 +1,96 @@
+[
+  {
+    "id": "barclays-2026",
+    "company": "Barclays",
+    "department": "Investment Banking Division",
+    "role": "AI Engineer Intern",
+    "location": "Gurugram, India",
+    "startDate": "May 2026",
+    "endDate": "July 2026",
+    "current": false,
+    "description": "Architected enterprise GraphRAG pipelines and scalable LLM microservices for Investment Banking analysts while adhering to strict financial data governance, compliance, and audit frameworks.",
+    "highlights": [
+      "Led the architecture and implementation of a GraphRAG pipeline on proprietary financial documents, integrating the system into the existing enterprise codebase.",
+      "Built asynchronous REST APIs using FastAPI on Azure Functions to serve LLM-backed tools for IB analysts, utilizing Azure AI Foundry, AI Search, Cosmos DB, and Blob Storage for reliable deployment at scale.",
+      "Implemented binary quantization techniques for vector embeddings within Azure AI Search, reducing vector index space utilization by up to 32x while preserving retrieval speed and accuracy.",
+      "Optimized document parsing by designing a hybrid classification system (rule-based and probabilistic) with 1-second average inference, bypassing unnecessary OCR via Azure Document Intelligence to achieve a 15–20x speedup.",
+      "Designed prompt engineering strategies and GenAI orchestration workflows for banker-facing tools, ensuring accurate, compliant, and audit-ready LLM outputs."
+    ],
+    "tags": [
+      "FastAPI",
+      "Azure AI",
+      "Enterprise Systems"
+    ],
+    "link": null,
+    "photos": []
+  },
+  {
+    "id": "iitgn-ta-2026",
+    "company": "IIT Gandhinagar",
+    "department": "Discipline of Artificial Intelligence",
+    "role": "Teaching Assistant — Software Tools & Techniques for AI",
+    "location": "Gandhinagar, India",
+    "startDate": "Jan 2026",
+    "endDate": "Apr 2026",
+    "current": false,
+    "description": "Selected as Undergraduate Teaching Assistant for CS203: Software Tools and Techniques for AI, guiding junior undergraduate students through practical engineering paradigms.",
+    "highlights": [
+      "Guided 160+ undergraduate students in applying AI frameworks, version control, and development tools through lab sessions.",
+      "Collaborated with course faculty to design assignments, create rubrics, evaluate coursework, and mentor students."
+    ],
+    "tags": [
+      "Teaching",
+      "AI Tools"
+    ],
+    "link": null,
+    "photos": []
+  },
+  {
+    "id": "iitgn-research-2025",
+    "company": "IIT Gandhinagar",
+    "department": "Sustainability Lab (Advisor: Prof. Nipun Batra)",
+    "role": "Summer Research Intern",
+    "location": "Gandhinagar, India",
+    "startDate": "May 2025",
+    "endDate": "July 2025",
+    "current": false,
+    "description": "Conducted core research on zero-shot and parameter-efficient fine-tuning evaluation of Vision-Language Models on thermal imagery; work culminated in ThermEval, accepted for poster presentation at KDD 2026 (Datasets & Benchmarks Track).",
+    "highlights": [
+      "Formulated evaluation protocols across 70,000+ VQA thermal samples across 25 leading foundation models (0.3B–235B parameters).",
+      "Engineered an automated LLM-based output parser validated on 1,200 human-annotated gold samples with >98% agreement.",
+      "Investigated fine-tuning dynamics using LoRA on an 8B model, closing the gap towards human-level reasoning in thermal scenes.",
+      "Published research paper in the main track at KDD 2026 (A* Machine Learning Conference)."
+    ],
+    "tags": [
+      "Vision-Language",
+      "Benchmarking",
+      "KDD 2026"
+    ],
+    "link": "https://sustainability-lab.github.io/thermeval/",
+    "linkText": "ThermEval Project Page",
+    "photos": []
+  },
+  {
+    "id": "kabal-research-2024",
+    "company": "Kabal Research",
+    "department": "AI & Quantitative Insights",
+    "role": "Artificial Intelligence Intern",
+    "location": "Remote",
+    "startDate": "June 2024",
+    "endDate": "July 2024",
+    "current": false,
+    "description": "Contributed to an AI software platform that optimizes commodity trading by analyzing global markets, sentiment dynamics, trade regulations, and geopolitical events while avoiding embargo restrictions.",
+    "highlights": [
+      "Designed a Reddit sentiment analysis module by identifying and scraping 200+ economic and political subreddits via API.",
+      "Analyzed sentiment using both comments and post interaction scores, leveraging LLMs and Named Entity Recognition (NER) to compute risk scores for country-specific events.",
+      "Built interactive dashboard interfaces and demonstrated the live system to stakeholders."
+    ],
+    "tags": [
+      "NLP",
+      "Sentiment Analysis"
+    ],
+    "link": "https://youtu.be/G3pG3bWB2v4?si=v7pYgpAZ7MKl7x_7",
+    "linkText": "Watch Project Demo Video",
+    "photos": []
+  }
+]

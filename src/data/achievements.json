@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ach-1",
+    "title": "Published at KDD 2026 (Main Track, Datasets & Benchmarks) — Top-tier ML A* Conference",
+    "icon": "trophy",
+    "year": 2026,
+    "link": "https://sustainability-lab.github.io/thermeval/"
+  },
+  {
+    "id": "ach-2",
+    "title": "Silver Medal at Inter-IIT Tech Meet 14.0 (IIT Patna) for ISRO Geospatial Statement among 23 IITs",
+    "icon": "medal",
+    "year": 2025,
+    "link": "https://github.com/Jain-Laksh/GeoNLI-Team-58/"
+  },
+  {
+    "id": "ach-3",
+    "title": "Dean's List Award & Academic Citations at IIT Gandhinagar (Ranked in top 5 students of AI Batch)",
+    "icon": "star",
+    "year": 2025,
+    "link": null
+  },
+  {
+    "id": "ach-4",
+    "title": "All-India Rank 1906 in IIT JEE Advanced 2023 (Top 1% out of 189,744 candidates)",
+    "icon": "fire",
+    "year": 2023,
+    "link": null
+  },
+  {
+    "id": "ach-5",
+    "title": "State Rank 136 in Karnataka Common Entrance Test (KCET) 2023 out of 261,610 candidates",
+    "icon": "award",
+    "year": 2023,
+    "link": null
+  },
+  {
+    "id": "ach-6",
+    "title": "Elected Class Representative for AI Batch 2023 & Core Member of Machine Learning Club, IITGN",
+    "icon": "code",
+    "year": 2024,
+    "link": null
+  }
+]

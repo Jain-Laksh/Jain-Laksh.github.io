@@ -1,0 +1,94 @@
+[
+  {
+    "slug": "eternal-sde1-interview-experience",
+    "title": "Eternal — SDE 1 Interview Experience",
+    "date": "2026-10-09",
+    "year": 2026,
+    "tags": [
+      "Interviews",
+      "Software Engineering"
+    ],
+    "excerpt": "On-campus interview experience for the full-time SDE 1 role at Eternal spanning the online assessment, OS/concurrency/caching rounds, distributed systems, and Tic-Tac-Toe system design. Selected.",
+    "readTime": "8 min read",
+    "coverImage": null
+  },
+  {
+    "slug": "msr-information-retrieval-interview-experience",
+    "title": "Microsoft Research (MSR) — Information Retrieval Research Intern Interview Experience",
+    "date": "2026-05-20",
+    "year": 2026,
+    "tags": [
+      "Interviews",
+      "Research"
+    ],
+    "excerpt": "Off-campus interview experience for the Information Retrieval Research Intern position at Microsoft Research (MSR). Reached final round.",
+    "readTime": "2 min read",
+    "coverImage": null
+  },
+  {
+    "slug": "alphagrep-interview-experience",
+    "title": "AlphaGrep — Quant / Software Intern Interview Experience",
+    "date": "2026-10-01",
+    "year": 2026,
+    "tags": [
+      "Interviews",
+      "Quant Tech"
+    ],
+    "excerpt": "Off-campus interview rounds covering C++ templates, number theory primality verification, and probability puzzles (infected ants dynamics). Reached final round.",
+    "readTime": "4 min read",
+    "coverImage": null
+  },
+  {
+    "slug": "amazon-applied-scientist-interview-experience",
+    "title": "Amazon — Applied Scientist Intern Interview Experience",
+    "date": "2026-03-05",
+    "year": 2026,
+    "tags": [
+      "Interviews",
+      "Machine Learning"
+    ],
+    "excerpt": "Off-campus interview experience for the Applied Scientist Intern role at Amazon covering 2D matrix search, K-Means clustering, coin-die simulations, VLM architectures, FlashAttention, and model quantization. Reached final round.",
+    "readTime": "8 min read",
+    "coverImage": null
+  },
+  {
+    "slug": "arm-embedded-software-interview-experience",
+    "title": "ARM — Embedded Software Intern Interview Experience",
+    "date": "2026-01-25",
+    "year": 2026,
+    "tags": [
+      "Interviews",
+      "Embedded Systems"
+    ],
+    "excerpt": "Off-campus interview experience covering C pointer/array mechanics, bit manipulation, CPU pipelining, and an offline final round in Bangalore designing an agentic test generator for 64-bit systems. Reached final round.",
+    "readTime": "7 min read",
+    "coverImage": null
+  },
+  {
+    "slug": "skanai-data-scientist-interview-experience",
+    "title": "Skan AI — Data Scientist Intern Interview Experience",
+    "date": "2025-08-15",
+    "year": 2025,
+    "tags": [
+      "Interviews",
+      "Data Science"
+    ],
+    "excerpt": "On-campus interview experience for the Data Scientist Intern role at Skan AI covering ML/DL assessments, research project deep-dives, RAG architectures, LoRA/QLoRA, and open-ended habit pattern recognition. Selected.",
+    "readTime": "9 min read",
+    "coverImage": null
+  },
+  {
+    "slug": "barclays-ai-engineer-interview-experience",
+    "title": "Barclays — AI Engineer Intern Interview Experience",
+    "date": "2025-08-15",
+    "year": 2025,
+    "tags": [
+      "Interviews",
+      "Artificial Intelligence",
+      "Software Engineering"
+    ],
+    "excerpt": "On-campus interview experience for the AI Engineer Intern role at Barclays covering ML fundamentals, decision boundaries, regularization mathematics, and behavioral leadership discussions. Selected.",
+    "readTime": "7 min read",
+    "coverImage": null
+  }
+]
