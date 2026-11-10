@@ -1,6 +1,9 @@
-# ARM — Embedded Software Intern Interview Experience
-
-*Published on January 25, 2026 • 7 min read*
+---
+title: ARM — Embedded Software Intern Interview Experience
+date: 2026-01-25
+tags: [Interviews, Embedded Systems]
+excerpt: Off-campus interview experience covering C pointer/array mechanics, bit manipulation, CPU pipelining, and an offline final round in Bangalore designing an agentic test generator for 64-bit systems. Reached final round.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the off-campus recruitment season. The original questions, code snippets, and flow have been preserved without fabricating unmentioned content.*
 

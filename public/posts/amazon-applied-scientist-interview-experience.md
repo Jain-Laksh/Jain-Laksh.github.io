@@ -1,6 +1,9 @@
-# Amazon — Applied Scientist Intern Interview Experience
-
-*Published on March 5, 2026 • 8 min read*
+---
+title: Amazon — Applied Scientist Intern Interview Experience
+date: 2026-03-05
+tags: [Interviews, Machine Learning]
+excerpt: Off-campus interview experience for the Applied Scientist Intern role at Amazon covering 2D matrix search, K-Means clustering, coin-die simulations, VLM architectures, FlashAttention, and model quantization. Reached final round.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the off-campus recruitment season. The original questions, flow, and storytelling have been preserved without fabricating unmentioned content.*
 

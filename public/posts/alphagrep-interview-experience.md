@@ -1,6 +1,9 @@
-# AlphaGrep — Quant / Software Intern Interview Experience
-
-*Published on October 1, 2026 • 4 min read*
+---
+title: AlphaGrep — Quant / Software Intern Interview Experience
+date: 2026-10-01
+tags: [Interviews, Quant Tech]
+excerpt: Off-campus interview rounds covering C++ templates, number theory primality verification, and probability puzzles (infected ants dynamics). Reached final round.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the off-campus recruitment season. The original questions and flow have been preserved without fabricating unmentioned content.*
 

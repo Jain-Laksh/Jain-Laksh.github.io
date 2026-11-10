@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaGraduationCap, FaEnvelope, FaXTwitter } from 'react-icons/fa6';
 import { FiArrowDown, FiBookOpen, FiCode, FiFileText } from 'react-icons/fi';
 import profileData from '../../data/profile.json';
-import ThermalPortrait from './ThermalPortrait';
 
 export default function Hero() {
   const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -42,7 +41,7 @@ export default function Hero() {
     const content = (
       <>
         <span className="hero-callout-head">
-          <span className="hero-callout-dot" />
+          <span className="live-dot" aria-hidden="true" />
           <span>{bubble.badge || '#OpenToWork'}</span>
         </span>
         <p>
@@ -64,7 +63,6 @@ export default function Hero() {
         </a>
       );
     }
-
     if (link) {
       return (
         <Link to={link} className="hero-callout" title={tooltip}>
@@ -72,7 +70,6 @@ export default function Hero() {
         </Link>
       );
     }
-
     return (
       <div className="hero-callout" title={tooltip}>
         {content}
@@ -82,12 +79,17 @@ export default function Hero() {
 
   const firstName = profileData.firstName;
   const lastName = profileData.lastName;
+  const email = profileData.socials.email || profileData.email;
 
   const socials = [
     profileData.socials.github && { label: 'GitHub', url: profileData.socials.github, icon: <FaGithub /> },
     profileData.socials.linkedin && { label: 'LinkedIn', url: profileData.socials.linkedin, icon: <FaLinkedin /> },
-    profileData.socials.googleScholar && { label: 'Google Scholar', url: profileData.socials.googleScholar, icon: <FaGraduationCap /> },
-    profileData.socials.email && { label: 'Email', url: `mailto:${profileData.socials.email}`, icon: <FaEnvelope />, internal: true },
+    profileData.socials.googleScholar && {
+      label: 'Google Scholar',
+      url: profileData.socials.googleScholar,
+      icon: <FaGraduationCap />,
+    },
+    email && { label: `Email ${email}`, url: `mailto:${email}`, icon: <FaEnvelope />, mail: true },
     profileData.socials.twitter && { label: 'X / Twitter', url: profileData.socials.twitter, icon: <FaXTwitter /> },
   ].filter(Boolean);
 
@@ -95,24 +97,58 @@ export default function Hero() {
     <section className="hero">
       <div className="container">
         <div className="hero-grid">
-          {/* Left Column: Text & CTAs */}
+          {/* Portrait */}
+          <div className="hero-figure">
+            <div className="hero-photo">
+              {!imgError ? (
+                <img
+                  src={imgSrc}
+                  alt={profileData.name}
+                  onError={handleImageError}
+                  fetchpriority="high"
+                  decoding="async"
+                />
+              ) : (
+                <div className="hero-photo-placeholder">{profileData.initials || 'YN'}</div>
+              )}
+            </div>
+            {profileData.status && (
+              <p className="hero-status">
+                <span className="live-dot" aria-hidden="true" />
+                {profileData.status}
+              </p>
+            )}
+          </div>
+
+          {/* Text & CTAs */}
           <div className="hero-text">
-            <p className="hero-greeting">Hello, I'm</p>
+            {renderThoughtBubble()}
+            <p className="hero-greeting hero-rise" style={{ '--d': '0ms' }}>
+              Hello, I'm
+            </p>
             <h1 className="hero-name">
               {firstName && lastName ? (
                 <>
-                  <span>{firstName}</span>
-                  <span>{lastName}</span>
+                  <span className="hero-name-line">
+                    <span style={{ '--d': '80ms' }}>{firstName}</span>
+                  </span>{' '}
+                  <span className="hero-name-line">
+                    <span style={{ '--d': '170ms' }}>{lastName}</span>
+                  </span>
                 </>
               ) : (
                 profileData.name
               )}
             </h1>
-            <p className="hero-title">{profileData.title}</p>
+            <p className="hero-title hero-rise" style={{ '--d': '320ms' }}>
+              {profileData.title}
+            </p>
 
-            <p className="hero-bio">{profileData.shortBio}</p>
+            <p className="hero-bio hero-rise" style={{ '--d': '400ms' }}>
+              {profileData.shortBio}
+            </p>
 
-            <div className="hero-actions">
+            <div className="hero-actions hero-rise" style={{ '--d': '480ms' }}>
               <Link to="/research" className="btn btn-solid">
                 <FiBookOpen />
                 <span>Explore Research</span>
@@ -127,32 +163,20 @@ export default function Hero() {
               </Link>
             </div>
 
-            <div className="hero-socials">
+            <div className="hero-socials hero-rise" style={{ '--d': '540ms' }}>
               {socials.map((s) => (
                 <a
                   key={s.label}
                   href={s.url}
-                  {...(s.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+                  {...(s.mail ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                   className="icon-btn"
                   aria-label={s.label}
-                  title={s.label}
+                  title={s.mail ? email : s.label}
                 >
                   {s.icon}
                 </a>
               ))}
             </div>
-          </div>
-
-          {/* Right Column: portrait with optional callout */}
-          <div className="hero-figure">
-            {renderThoughtBubble()}
-            <ThermalPortrait
-              src={imgSrc}
-              alt={profileData.name}
-              onError={handleImageError}
-              imgError={imgError}
-              initials={profileData.initials || 'YN'}
-            />
           </div>
         </div>
 

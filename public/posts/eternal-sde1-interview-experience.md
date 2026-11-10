@@ -1,6 +1,9 @@
-# Eternal — SDE 1 Interview Experience
-
-*Published on October 9, 2026 • 8 min read*
+---
+title: Eternal — SDE 1 Interview Experience
+date: 2026-10-09
+tags: [Interviews, Software Engineering]
+excerpt: On-campus interview experience for the full-time SDE 1 role at Eternal spanning the online assessment, OS/concurrency/caching rounds, distributed systems, and Tic-Tac-Toe system design. Selected.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the placement season. The original questions, flow, and storytelling have been preserved without fabricating unmentioned content.*
 

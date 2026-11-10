@@ -1,6 +1,9 @@
-# Barclays — AI Engineer Intern Interview Experience
-
-*Published on August 15, 2025 • 7 min read*
+---
+title: Barclays — AI Engineer Intern Interview Experience
+date: 2025-08-15
+tags: [Interviews, Artificial Intelligence, Software Engineering]
+excerpt: On-campus interview experience for the AI Engineer Intern role at Barclays covering ML fundamentals, decision boundaries, regularization mathematics, and behavioral leadership discussions. Selected.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the internship season. The original questions, flow, and storytelling have been preserved without fabricating unmentioned content.*
 

@@ -1,26 +1,61 @@
 import React, { useState } from 'react';
-import { FaGithub, FaLinkedin, FaGraduationCap, FaEnvelope, FaInstagram, FaXTwitter } from 'react-icons/fa6';
-import { FiDownload, FiExternalLink, FiFileText, FiMapPin, FiMail, FiPhone } from 'react-icons/fi';
+import { FaGithub, FaLinkedin, FaGraduationCap, FaEnvelope, FaInstagram, FaXTwitter, FaBuildingColumns } from 'react-icons/fa6';
+import { FiDownload, FiExternalLink, FiFileText, FiMapPin, FiMail, FiPhone, FiCopy, FiCheck } from 'react-icons/fi';
 import profileData from '../data/profile.json';
 import workData from '../data/workExperience.json';
 import publicationsData from '../data/publications.json';
 import achievementsData from '../data/achievements.json';
 import { PageHead } from '../components/Shared/PageHead';
+import { copyText } from '../lib/format';
+
+// Browsers that can't show PDFs inline (most phones) report pdfViewerEnabled === false
+const canEmbedPdf = typeof navigator === 'undefined' || navigator.pdfViewerEnabled !== false;
+
+function EmailRow({ name, address, icon }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    if (await copyText(address)) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+  return (
+    <div className="contact-row">
+      <a href={`mailto:${address}`} className="contact" title={`Email ${address}`}>
+        <span className="contact-icon" aria-hidden="true">
+          {icon}
+        </span>
+        <div>
+          <h3>{name}</h3>
+          <p>{address}</p>
+        </div>
+      </a>
+      <button
+        type="button"
+        className={`copy-btn ${copied ? 'is-done' : ''}`}
+        onClick={copy}
+        aria-label={`Copy ${address}`}
+      >
+        {copied ? <FiCheck aria-hidden="true" /> : <FiCopy aria-hidden="true" />}
+        <span aria-live="polite">{copied ? 'Copied' : 'Copy'}</span>
+      </button>
+    </div>
+  );
+}
 
 export default function Connect() {
-  // Default to 'embed' (PDF View) so the uploaded resume is visible immediately
-  const [cvViewMode, setCvViewMode] = useState('embed');
+  // PDF view by default where the browser can show it; the web summary otherwise
+  const [cvViewMode, setCvViewMode] = useState(canEmbedPdf ? 'embed' : 'text');
+
+  const primaryEmail = profileData.email;
+  const collegeEmail = profileData.secondaryEmail;
+
+  const handle = (url, fallback) => '@' + (url.split('/').filter(Boolean).pop() || fallback);
 
   const socialsList = [
-    profileData.email && {
-      name: 'Email',
-      handle: profileData.email,
-      url: `mailto:${profileData.email}`,
-      icon: <FaEnvelope />,
-    },
     profileData.socials?.github && {
       name: 'GitHub',
-      handle: '@' + (profileData.socials.github.split('/').filter(Boolean).pop() || 'github'),
+      handle: handle(profileData.socials.github, 'github'),
       url: profileData.socials.github,
       icon: <FaGithub />,
     },
@@ -38,13 +73,13 @@ export default function Connect() {
     },
     profileData.socials?.twitter && {
       name: 'X / Twitter',
-      handle: '@' + (profileData.socials.twitter.split('/').filter(Boolean).pop() || 'twitter'),
+      handle: handle(profileData.socials.twitter, 'twitter'),
       url: profileData.socials.twitter,
       icon: <FaXTwitter />,
     },
     profileData.socials?.instagram && {
       name: 'Instagram',
-      handle: '@' + (profileData.socials.instagram.split('/').filter(Boolean).pop() || 'instagram'),
+      handle: handle(profileData.socials.instagram, 'instagram'),
       url: profileData.socials.instagram,
       icon: <FaInstagram />,
     },
@@ -60,8 +95,10 @@ export default function Connect() {
         Feel free to reach out for research collaborations, engineering opportunities, or to discuss new ideas!
       </PageHead>
 
-      {/* Socials */}
+      {/* Email & socials */}
       <div className="contact-list">
+        {primaryEmail && <EmailRow name="Email" address={primaryEmail} icon={<FaEnvelope />} />}
+        {collegeEmail && <EmailRow name="College Email" address={collegeEmail} icon={<FaBuildingColumns />} />}
         {socialsList.map((item) => (
           <a key={item.name} href={item.url} target="_blank" rel="noopener noreferrer" className="contact">
             <span className="contact-icon" aria-hidden="true">
@@ -93,13 +130,7 @@ export default function Connect() {
               </button>
             </div>
 
-            <a
-              href={cvUrl}
-              download="Laksh_Jain_CV.pdf"
-              className="btn btn-solid btn-sm"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={cvUrl} download="Laksh_Jain_CV.pdf" className="btn btn-solid btn-sm">
               <FiDownload />
               <span>Download PDF</span>
             </a>
@@ -119,18 +150,31 @@ export default function Connect() {
           </div>
 
           {cvViewMode === 'embed' ? (
-            <div className="cv-embed">
-              <object data={`${cvUrl}#view=FitH`} type="application/pdf" aria-label="Curriculum Vitae PDF">
-                <iframe src={`${cvUrl}#view=FitH`} title="Curriculum Vitae PDF">
-                  <div className="cv-embed-fallback">
+            canEmbedPdf ? (
+              <div className="cv-embed">
+                <object data={`${cvUrl}#view=FitH`} type="application/pdf" aria-label="Curriculum Vitae PDF">
+                  <div className="cv-nopdf">
                     <p>PDF preview could not be displayed directly.</p>
                     <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="btn btn-solid">
                       Open PDF in New Tab
                     </a>
                   </div>
-                </iframe>
-              </object>
-            </div>
+                </object>
+              </div>
+            ) : (
+              <div className="cv-nopdf">
+                <p>This browser can't show the PDF here. Open it in a new tab, download it, or read the web summary.</p>
+                <div className="empty-actions">
+                  <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="btn btn-solid btn-sm">
+                    <FiExternalLink />
+                    <span>Open PDF in New Tab</span>
+                  </a>
+                  <button type="button" className="btn btn-line btn-sm" onClick={() => setCvViewMode('text')}>
+                    Web Summary
+                  </button>
+                </div>
+              </div>
+            )
           ) : (
             /* Structured Web CV summary */
             <div className="cv-summary">
@@ -147,8 +191,14 @@ export default function Connect() {
                   </span>
                   <span>
                     <FiMail aria-hidden="true" />
-                    <a href={`mailto:${profileData.email}`}>{profileData.email}</a>
+                    <a href={`mailto:${primaryEmail}`}>{primaryEmail}</a>
                   </span>
+                  {collegeEmail && (
+                    <span>
+                      <FiMail aria-hidden="true" />
+                      <a href={`mailto:${collegeEmail}`}>{collegeEmail}</a>
+                    </span>
+                  )}
                   {profileData.phone && (
                     <span>
                       <FiPhone aria-hidden="true" />

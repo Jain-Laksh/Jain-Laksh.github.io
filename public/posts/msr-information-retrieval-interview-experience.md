@@ -1,6 +1,9 @@
-# Microsoft Research (MSR) — Information Retrieval Research Intern Interview Experience
-
-*Published on May 20, 2026 • 2 min read*
+---
+title: Microsoft Research (MSR) — Information Retrieval Research Intern Interview Experience
+date: 2026-05-20
+tags: [Interviews, Research]
+excerpt: Off-campus interview experience for the Information Retrieval Research Intern position at Microsoft Research (MSR). Reached final round.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the off-campus recruitment season. The original structure has been preserved.*
 

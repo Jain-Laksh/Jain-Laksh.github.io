@@ -23,10 +23,10 @@ A modern, responsive portfolio website built with **React 18**, **Vite**, and **
 - **Posts/Blogs Tab**:
   - Grouped by year descending and sorted by date descending.
   - Tag filtering and search bar.
-  - Dedicated post reader (`/blog/:slug`) with Table of Contents sidebar, reading time, and share button.
+  - Dedicated post reader (`/blog/:slug`) with table of contents, automatic reading time, likes, views, and share button.
   - Powered by Markdown (`react-markdown` + GitHub flavored markdown support).
 - **Connect/CV Tab**:
-  - Direct social links (Email, GitHub, LinkedIn, Google Scholar, X/Twitter, Instagram).
+  - Email (personal and college, with copy buttons) and social links (GitHub, LinkedIn, Google Scholar, X/Twitter, Instagram).
   - Embedded PDF CV viewer with one-click download and new tab viewer, plus an interactive web resume fallback.
 
 ---
@@ -72,12 +72,32 @@ All data is decoupled into simple JSON files under `src/data/`. You never need t
 | `src/data/news.json` | Recent milestone announcements and dates |
 | `src/data/achievements.json` | Honors, awards, and competitions |
 | `src/data/quotes.json` | Inspirational quotes & thoughts |
-| `src/data/posts.json` | Blog post metadata (slug, title, date, excerpt, tags) |
+| `public/posts/*.md` | Blog posts — each file holds its own title, date, tags and excerpt (see below) |
 
 ### Adding a New Blog Post:
-1. Create a markdown file: `public/posts/my-new-post.md`.
-2. Add an entry to `src/data/posts.json` with matching `slug: "my-new-post"`.
-3. That's it! It will appear on your blog page automatically.
+Create one file, `public/posts/my-new-post.md`. The file name becomes the URL (`/#/blog/my-new-post`), so use lowercase words separated by hyphens. Start it with a frontmatter block:
+
+```markdown
+---
+title: Company — Role Interview Experience
+date: 2026-11-20
+tags: [Interviews, Software Engineering]
+excerpt: One or two sentences shown on the Posts page.
+---
+
+> Your post starts here. Don't repeat the title or date; the page shows them.
+
+## First section
+```
+
+- `date` is written once, as `YYYY-MM-DD`; the year grouping, sort order and "Published" date all come from it.
+- Reading time is calculated from the word count, so there's nothing to update when you edit a post.
+- Add `draft: true` to see a post in `npm run dev` without publishing it.
+- If a required field is missing or the date is invalid, `npm run build` stops with a message naming the file, so a broken post can't be deployed.
+- Images go in `public/images/` and are referenced as `![Alt text](/images/photo.jpg)`.
+
+### Likes & Views
+Likes and views use the free [Abacus](https://abacus.jasoncameron.dev) counter API (see `src/hooks/usePostLikes.js` for how edge cases are handled). They only count on the deployed site — opening posts on `localhost` reads the live numbers but never changes them.
 
 ### Updating Your Resume:
 Replace `public/cv.pdf` with your actual CV PDF.

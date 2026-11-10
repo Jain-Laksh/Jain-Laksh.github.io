@@ -1,6 +1,9 @@
-# Skan AI — Data Scientist Intern Interview Experience
-
-*Published on August 15, 2025 • 9 min read*
+---
+title: Skan AI — Data Scientist Intern Interview Experience
+date: 2025-08-15
+tags: [Interviews, Data Science]
+excerpt: On-campus interview experience for the Data Scientist Intern role at Skan AI covering ML/DL assessments, research project deep-dives, RAG architectures, LoRA/QLoRA, and open-ended habit pattern recognition. Selected.
+---
 
 > **Disclaimer**: *AI was used to summarize and structure this interview experience from my personal notes taken during the on-campus internship season. The original questions, flow, and storytelling have been preserved without fabricating unmentioned content.*
 

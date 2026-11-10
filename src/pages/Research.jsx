@@ -87,7 +87,7 @@ export default function Research() {
       <section className="research-block margin-grid">
         <div aria-hidden="true" />
         <div>
-          <h2 className="block-title">Background & Philosophy</h2>
+          <h2 className="block-title">Research Statement</h2>
           <div className="essay">
             {Array.isArray(profileData.researchBackground) ? (
               profileData.researchBackground.map((para, idx) => <p key={idx}>{formatBioText(para)}</p>)

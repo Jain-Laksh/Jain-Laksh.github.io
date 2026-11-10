@@ -20,8 +20,7 @@ export default function Footer() {
             <a
               key={s.name}
               href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              {...(s.url.startsWith('mailto:') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
               className="icon-btn"
               aria-label={s.name}
               title={s.name}

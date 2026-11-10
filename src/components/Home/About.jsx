@@ -32,15 +32,16 @@ export default function About() {
     'Chess & Puzzles',
   ];
 
+  // Values come from profile.json so they stay in sync with the CV
   const facts = [
-    { label: 'Education', value: 'B.Tech in Artificial Intelligence' },
-    { label: 'Institution', value: 'IIT Gandhinagar (2023 — 2027)' },
-    { label: 'Academic Merit', value: 'CPI: 9.05 / 10.0' },
-    { label: 'College Location', value: 'Gandhinagar, Gujarat, India' },
-    { label: 'Hometown', value: 'Bengaluru, Karnataka, India' },
+    { label: 'Education', value: `B.Tech in ${profileData.department || 'Artificial Intelligence'}` },
+    { label: 'Institution', value: `${profileData.institutionShort} (2023 — 2027)` },
+    { label: 'Academic Merit', value: `CPI: ${profileData.cpi}` },
+    { label: 'College Location', value: profileData.collegeLocation },
+    { label: 'Hometown', value: profileData.hometown },
     { label: 'Focus Areas', value: 'Multimodal, Explainability, ML Infra & Edge' },
     { label: 'Beyond Tech', value: 'Chess, Puzzles, Sci-Fi, Gaming' },
-  ];
+  ].filter((f) => f.value);
 
   return (
     <section id="about" className="section">
@@ -60,7 +61,6 @@ export default function About() {
           <div className="about-columns">
             {/* Narrative & Tags */}
             <div className="about-body">
-              <h3>Building at the Intersection of Multimodal AI & High-Performance Systems</h3>
               {Array.isArray(profileData.bio) ? (
                 profileData.bio.map((paragraph, idx) => <p key={idx}>{formatBioText(paragraph)}</p>)
               ) : (

@@ -1,527 +1,586 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+/**
+ * Blog likes & views, backed by the free Abacus counter API (https://abacus.jasoncameron.dev).
+ *
+ * Abacus counters can only go up without an admin key (which must never ship in a public
+ * site), so likes use two counters per post: `likes` and `unlikes`. The number shown is
+ * likes − unlikes. Each browser remembers what it wants (liked or not) and what the server
+ * already reflects for it, and only sends a hit when those differ — so toggling any number
+ * of times nets out correctly for every visitor.
+ *
+ * Real-world cases handled:
+ * - Unlike is visible to everyone (not just the person who unliked).
+ * - A like made while offline / blocked / rate-limited is kept and retried later
+ *   (on reconnect, on the next visit, or when the tab is closed via keepalive).
+ * - Rapid like/unlike clicks are merged into one request.
+ * - Two open tabs can't double-count (Web Locks + storage events keep them in sync).
+ * - Abacus allows 30 requests / 10 s per visitor: requests are queued under that budget,
+ *   429s pause the queue, and the Posts page only loads counts for rows on screen.
+ * - Views count once per browser per post per 24 h, only for real posts, only once the
+ *   tab is actually visible, and never for bots/headless browsers.
+ * - Nothing is written from localhost or dev builds, so local testing never changes the
+ *   live numbers.
+ * - Failed requests never overwrite known counts with 0; storage can be unavailable
+ *   (private mode) without breaking anything.
+ */
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-const COUNTER_API_BASE = 'https://abacus.jasoncameron.dev';
-const COUNTER_LIKES_NAMESPACE = 'lakshjain-blog-likes';
-const COUNTER_VIEWS_NAMESPACE = 'lakshjain-blog-views';
+const API = 'https://abacus.jasoncameron.dev';
+const PREFIX = import.meta.env.VITE_STATS_NAMESPACE || 'lakshjain-blog';
+const NS = {
+  likes: `${PREFIX}-likes`,
+  unlikes: `${PREFIX}-unlikes`,
+  views: `${PREFIX}-views`,
+};
+const FIELDS = ['likes', 'unlikes', 'views'];
 
-// In-memory sets to prevent duplicate hits and race conditions
-const inMemoryContributedLikes = new Set();
-const inFlightViewHits = new Set();
+const VIEW_WINDOW_MS = 24 * 60 * 60 * 1000;
+const STATS_TTL_MS = 60 * 1000;
+const REQUEST_TIMEOUT_MS = 6000;
+const RATE_WINDOW_MS = 10 * 1000;
+const RATE_BUDGET = 24; // Abacus allows 30 per 10 s; keep headroom
+const MAX_CONCURRENT = 4;
 
-// One-time cache reset for legacy mock/test counts so counts start fresh at true zero
-if (typeof window !== 'undefined') {
+const hasWindow = typeof window !== 'undefined';
+const host = hasWindow ? window.location.hostname : '';
+const IS_LOCAL =
+  !host ||
+  host === 'localhost' ||
+  host === '127.0.0.1' ||
+  host === '[::1]' ||
+  host.endsWith('.local') ||
+  /^(10|192\.168|172\.(1[6-9]|2\d|3[01]))\./.test(host);
+const IS_BOT =
+  hasWindow &&
+  (navigator.webdriver ||
+    /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|lighthouse|headless|prerender|preview/i.test(
+      navigator.userAgent || ''
+    ));
+
+/** Whether this page load may change the live counters. */
+export const STATS_WRITABLE =
+  import.meta.env.VITE_STATS_FORCE_WRITES === 'true' || (import.meta.env.PROD && !IS_LOCAL && !IS_BOT);
+
+/* ---------------------------------------------------------------- storage */
+
+const memory = new Map();
+const storage = {
+  get(key) {
+    if (memory.has(key)) return memory.get(key);
+    try {
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(key, value) {
+    memory.set(key, value);
+    try {
+      window.localStorage.setItem(key, value);
+    } catch {
+      /* private mode / quota: memory copy still works for this visit */
+    }
+  },
+  /** Re-read a key from localStorage (another tab may have changed it); keeps memory if unavailable. */
+  refresh(key) {
+    try {
+      const value = window.localStorage.getItem(key);
+      if (value === null) memory.delete(key);
+      else memory.set(key, value);
+    } catch {
+      /* storage unavailable: memory is the only copy */
+    }
+  },
+  keys() {
+    try {
+      return Object.keys(window.localStorage);
+    } catch {
+      return [...memory.keys()];
+    }
+  },
+};
+
+function readJSON(key) {
+  const raw = storage.get(key);
+  if (!raw) return null;
   try {
-    const RESET_VERSION = 'portfolio_reset_v20261020_v1';
-    if (!localStorage.getItem(RESET_VERSION)) {
-      Object.keys(localStorage).forEach((key) => {
-        if (
-          key.startsWith('portfolio_likes_count_') ||
-          key.startsWith('portfolio_views_count_') ||
-          key.startsWith('portfolio_cloud_hits_') ||
-          key.startsWith('portfolio_has_contributed_') ||
-          key.startsWith('portfolio_liked_')
-        ) {
-          localStorage.removeItem(key);
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+const statsKey = (slug) => `pstats:${slug}`;
+const likeKey = (slug) => `plike:${slug}`;
+const viewKey = (slug) => `pview:${slug}`;
+
+/* ---------------------------------------------------------------- store */
+
+const listeners = new Set();
+let version = 0;
+function emit() {
+  version += 1;
+  listeners.forEach((l) => l());
+}
+function subscribe(listener) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+const getVersion = () => version;
+
+const statsCache = new Map(); // slug -> { likes, unlikes, views, at }
+const likeCache = new Map(); // slug -> { want, synced }
+
+function getStats(slug) {
+  if (!statsCache.has(slug)) {
+    const cached = readJSON(statsKey(slug));
+    statsCache.set(slug, {
+      likes: typeof cached?.likes === 'number' ? cached.likes : null,
+      unlikes: typeof cached?.unlikes === 'number' ? cached.unlikes : null,
+      views: typeof cached?.views === 'number' ? cached.views : null,
+      at: typeof cached?.at === 'number' ? cached.at : 0,
+    });
+  }
+  return statsCache.get(slug);
+}
+
+function setStats(slug, patch) {
+  const next = { ...getStats(slug), ...patch };
+  statsCache.set(slug, next);
+  storage.set(statsKey(slug), JSON.stringify(next));
+  emit();
+}
+
+function getLikeState(slug) {
+  if (!likeCache.has(slug)) {
+    let state = readJSON(likeKey(slug));
+    if (!state) {
+      // Migrate from the previous implementation's keys
+      const liked = storage.get(`portfolio_liked_${slug}`) === 'true';
+      const contributed = storage.get(`portfolio_has_contributed_${slug}`) === 'true';
+      state = { want: liked, synced: contributed };
+    }
+    // `sending` is set just before a request goes out. If it is still set when read back
+    // (the tab closed mid-request, or a keepalive request on close), the request most
+    // likely reached the server — assume it did, so it is never sent twice.
+    const synced = typeof state.sending === 'boolean' ? state.sending : Boolean(state.synced);
+    likeCache.set(slug, { want: Boolean(state.want), synced, sending: null });
+  }
+  return likeCache.get(slug);
+}
+
+function setLikeState(slug, state) {
+  likeCache.set(slug, state);
+  storage.set(likeKey(slug), JSON.stringify(state));
+  emit();
+}
+
+/** Counters only ever increase, so a fresh cache never needs to go down. */
+function mergeCount(current, incoming, cacheIsFresh) {
+  if (typeof incoming !== 'number') return current;
+  if (cacheIsFresh && typeof current === 'number') return Math.max(current, incoming);
+  return incoming;
+}
+
+/* ---------------------------------------------------------------- request queue */
+
+const queue = [];
+const sentAt = [];
+let active = 0;
+let pausedUntil = 0;
+let pumpTimer = null;
+
+function pump() {
+  if (pumpTimer) return;
+  while (active < MAX_CONCURRENT && queue.length) {
+    const now = Date.now();
+    while (sentAt.length && now - sentAt[0] > RATE_WINDOW_MS) sentAt.shift();
+    const wait = Math.max(
+      pausedUntil - now,
+      sentAt.length >= RATE_BUDGET ? sentAt[0] + RATE_WINDOW_MS - now : 0
+    );
+    if (wait > 0) {
+      pumpTimer = setTimeout(() => {
+        pumpTimer = null;
+        pump();
+      }, wait + 25);
+      return;
+    }
+    const item = queue.shift();
+    active += 1;
+    sentAt.push(now);
+    item
+      .run()
+      .then(item.resolve, item.reject)
+      .finally(() => {
+        active -= 1;
+        pump();
+      });
+  }
+}
+
+function enqueue(run, { priority = false } = {}) {
+  return new Promise((resolve, reject) => {
+    const item = { run, resolve, reject };
+    if (priority) queue.unshift(item);
+    else queue.push(item);
+    pump();
+  });
+}
+
+/** Abacus keys: 3–64 chars of [A-Za-z0-9_-]. */
+function counterKey(slug) {
+  let key = String(slug).replace(/[^A-Za-z0-9_-]/g, '-');
+  if (key.length > 64) {
+    let h = 5381;
+    for (let i = 0; i < slug.length; i++) h = ((h << 5) + h + slug.charCodeAt(i)) >>> 0;
+    key = `${key.slice(0, 55)}-${h.toString(36)}`.slice(0, 64);
+  }
+  return key.padEnd(3, '-');
+}
+
+/**
+ * `notCounted: true` means the server certainly did not count the request (rejected,
+ * or never reached). `false` means it may have (e.g. timed out after sending).
+ */
+function counterError(message, notCounted) {
+  const err = new Error(message);
+  err.notCounted = notCounted;
+  return err;
+}
+
+async function callCounter(op, field, slug, { keepalive = false } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(`${API}/${op}/${NS[field]}/${counterKey(slug)}`, {
+      signal: controller.signal,
+      cache: 'no-store',
+      credentials: 'omit',
+      keepalive,
+    });
+  } catch (err) {
+    throw err?.name === 'AbortError'
+      ? counterError('timed out', false)
+      : counterError('network error', true); // offline, DNS, blocked by an extension
+  } finally {
+    clearTimeout(timer);
+  }
+  if (res.status === 404 && op === 'get') return 0; // counter not created yet
+  if (res.status === 429) {
+    const retryAfter = parseFloat(res.headers.get('Retry-After'));
+    pausedUntil = Date.now() + (Number.isFinite(retryAfter) ? retryAfter * 1000 : RATE_WINDOW_MS);
+    throw counterError('rate limited', true);
+  }
+  if (!res.ok) throw counterError(`HTTP ${res.status}`, true);
+  const data = await res.json().catch(() => null);
+  if (typeof data?.value !== 'number') throw counterError('unexpected response', false);
+  return data.value;
+}
+
+/* ---------------------------------------------------------------- loading */
+
+const loading = new Map();
+
+export function loadStats(slug, { force = false, priority = false } = {}) {
+  if (!slug || !hasWindow) return Promise.resolve();
+  const cached = getStats(slug);
+  if (!force && Date.now() - cached.at < STATS_TTL_MS) return Promise.resolve();
+  if (loading.has(slug)) return loading.get(slug);
+
+  const promise = Promise.allSettled(
+    FIELDS.map((field) => enqueue(() => callCounter('get', field, slug), { priority }))
+  )
+    .then((results) => {
+      const current = getStats(slug);
+      const fresh = Date.now() - current.at < 10 * STATS_TTL_MS;
+      const patch = {};
+      let ok = false;
+      results.forEach((r, i) => {
+        if (r.status === 'fulfilled') {
+          ok = true;
+          patch[FIELDS[i]] = mergeCount(current[FIELDS[i]], r.value, fresh);
         }
       });
-      try {
-        sessionStorage.clear();
-      } catch (e) {}
-      localStorage.setItem(RESET_VERSION, 'true');
-    }
-  } catch (e) {
-    // Ignore storage errors in restricted contexts
-  }
+      if (ok) setStats(slug, { ...patch, at: Date.now() });
+    })
+    .finally(() => loading.delete(slug));
+
+  loading.set(slug, promise);
+  return promise;
 }
 
-/**
- * Helper to compute total likes consistently:
- * - initialLikes: baseline (defaults to 0)
- * - cloudHits: total likes registered in the cloud API
- * - isLiked: current user's active like state (true/false)
- * - hasContributed: whether current user's like is already part of cloudHits
- */
-function computeLikes(initialLikes = 0, cloudHits = 0, isLiked = false, hasContributed = false) {
-  let count = (initialLikes || 0) + (cloudHits || 0);
-  if (hasContributed && !isLiked) {
-    count = Math.max(0, count - 1);
+/* ---------------------------------------------------------------- likes */
+
+export function selectLikes(slug) {
+  const s = getStats(slug);
+  const { want, synced } = getLikeState(slug);
+  if (s.likes === null) {
+    // Server count unknown (never loaded, or offline on first visit)
+    return want ? 1 : null;
   }
-  return Math.max(0, count);
+  const net = s.likes - (s.unlikes ?? 0);
+  return Math.max(0, net - (synced ? 1 : 0) + (want ? 1 : 0));
 }
 
-/**
- * Hook to manage likes for a blog post with:
- * 1. Global cloud counter API synchronization across all visitors worldwide (starting from 0)
- * 2. Anti-spam / anti-hack protection (each visitor can only contribute 1 cloud hit)
- * 3. Instant optimistic UI updates & local storage persistence
- * 4. Real-time cross-component & cross-tab synchronization
- *
- * @param {string} slug - The blog post unique slug identifier.
- * @param {number} initialLikes - Baseline like count (defaults to 0).
- */
-export function usePostLikes(slug, initialLikes = 0) {
-  const [likes, setLikes] = useState(() => {
-    if (!slug) return initialLikes;
-    try {
-      const storedCount = localStorage.getItem(`portfolio_likes_count_${slug}`);
-      if (storedCount !== null) {
-        const parsed = parseInt(storedCount, 10);
-        return !isNaN(parsed) ? parsed : initialLikes;
-      }
-    } catch (e) {
-      // ignore
-    }
-    return initialLikes;
-  });
+const syncTimers = new Map();
+const retryTimers = new Map();
+const syncing = new Set();
 
-  const [isLiked, setIsLiked] = useState(() => {
-    if (!slug) return false;
-    try {
-      return localStorage.getItem(`portfolio_liked_${slug}`) === 'true';
-    } catch (e) {
-      return false;
-    }
-  });
+const LOCK_BUSY = Symbol('lock-busy');
 
-  const [animating, setAnimating] = useState(false);
-  const likesRef = useRef(likes);
-  likesRef.current = likes;
+function withLock(name, fn) {
+  if (hasWindow && navigator.locks?.request) {
+    return navigator.locks.request(name, { ifAvailable: true }, (lock) => (lock ? fn() : LOCK_BUSY));
+  }
+  return fn();
+}
 
-  // Fetch latest global likes from the Counter API
-  const fetchCloudLikes = useCallback(async () => {
-    if (!slug) return;
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      const res = await fetch(
-        `${COUNTER_API_BASE}/get/${COUNTER_LIKES_NAMESPACE}/${slug}`,
-        { signal: controller.signal }
-      );
-      clearTimeout(timeoutId);
-
-      let cloudHits = 0;
-      if (res.ok) {
-        const data = await res.json();
-        cloudHits = typeof data.value === 'number' ? data.value : 0;
-      } else if (res.status === 404) {
-        // 404 on Abacus means key does not exist yet -> true 0 count
-        cloudHits = 0;
-      } else {
-        // Network or server error -> retain current state
+async function syncLike(slug, { keepalive = false, attempt = 0 } = {}) {
+  if (!STATS_WRITABLE || syncing.has(slug)) return;
+  syncing.add(slug);
+  let succeeded = false;
+  let busy = false;
+  try {
+    const result = await withLock(`portfolio-like-${slug}`, async () => {
+      // Re-read: another tab may already have synced this post
+      storage.refresh(likeKey(slug));
+      likeCache.delete(slug);
+      const state = getLikeState(slug);
+      if (state.want === state.synced) {
+        succeeded = true;
         return;
       }
-
+      const target = state.want;
+      const field = target ? 'likes' : 'unlikes';
+      let value;
       try {
-        localStorage.setItem(`portfolio_cloud_hits_${slug}`, cloudHits.toString());
-      } catch (e) {}
+        value = await enqueue(
+          () => {
+            // Persist "sending" right before the request leaves (not while queued)
+            setLikeState(slug, { ...getLikeState(slug), sending: target });
+            return callCounter('hit', field, slug, { keepalive });
+          },
+          { priority: true }
+        );
+      } catch (err) {
+        if (err?.notCounted) {
+          setLikeState(slug, { ...getLikeState(slug), sending: null });
+          throw err;
+        }
+        // Outcome unknown (timed out): assume it counted rather than risk counting twice
+        setLikeState(slug, { ...getLikeState(slug), synced: target, sending: null });
+        loadStats(slug, { force: true });
+        succeeded = true;
+        return;
+      }
+      setStats(slug, { [field]: Math.max(value, getStats(slug)[field] ?? 0) });
+      setLikeState(slug, { ...getLikeState(slug), synced: target, sending: null });
+      succeeded = true;
+    });
+    busy = result === LOCK_BUSY;
+  } catch {
+    // Kept as pending; retried with backoff, on reconnect, or on the next visit
+    const delay = Math.min(5 * 60 * 1000, 15000 * 2 ** attempt);
+    clearTimeout(retryTimers.get(slug));
+    retryTimers.set(slug, setTimeout(() => syncLike(slug, { attempt: attempt + 1 }), delay));
+  } finally {
+    syncing.delete(slug);
+  }
+  // Another tab is syncing this post right now: check again once it is done
+  if (busy) scheduleSync(slug, 2000);
+  // The visitor may have toggled again while the request was in flight
+  const latest = getLikeState(slug);
+  if (succeeded && latest.want !== latest.synced) scheduleSync(slug, 0);
+}
 
-      const userLikedLocally = localStorage.getItem(`portfolio_liked_${slug}`) === 'true';
-      const hasContributedLocally =
-        localStorage.getItem(`portfolio_has_contributed_${slug}`) === 'true' ||
-        inMemoryContributedLikes.has(slug);
+function scheduleSync(slug, delay = 800) {
+  if (!STATS_WRITABLE) return;
+  clearTimeout(syncTimers.get(slug));
+  syncTimers.set(
+    slug,
+    setTimeout(() => {
+      syncTimers.delete(slug);
+      syncLike(slug);
+    }, delay)
+  );
+}
 
-      const total = computeLikes(
-        initialLikes,
-        cloudHits,
-        userLikedLocally,
-        hasContributedLocally
-      );
+function pendingLikeSlugs() {
+  return storage
+    .keys()
+    .filter((k) => k.startsWith('plike:'))
+    .map((k) => k.slice('plike:'.length))
+    .filter((slug) => {
+      const s = getLikeState(slug);
+      return s.want !== s.synced;
+    });
+}
 
-      setLikes(total);
-      try {
-        localStorage.setItem(`portfolio_likes_count_${slug}`, total.toString());
-      } catch (e) {}
-    } catch (err) {
-      // Graceful offline fallback: keep cached/local state
+export function toggleLike(slug) {
+  const state = getLikeState(slug);
+  const next = { ...state, want: !state.want };
+  setLikeState(slug, next);
+  scheduleSync(slug);
+  return next.want;
+}
+
+/* ---------------------------------------------------------------- views */
+
+const viewsInFlight = new Set();
+
+function recordView(slug) {
+  if (!STATS_WRITABLE) {
+    loadStats(slug, { priority: true });
+    return undefined;
+  }
+  const lastCounted = () => {
+    storage.refresh(viewKey(slug)); // another tab may have counted it
+    return Number(storage.get(viewKey(slug))) || 0;
+  };
+  const alreadyCounted = () => Date.now() - lastCounted() < VIEW_WINDOW_MS || viewsInFlight.has(slug);
+
+  if (alreadyCounted()) {
+    loadStats(slug, { priority: true });
+    return undefined;
+  }
+
+  const count = () => {
+    // Checked again here: a background tab may become visible after another tab counted
+    if (alreadyCounted()) {
+      loadStats(slug, { priority: true });
+      return;
     }
-  }, [slug, initialLikes]);
+    const previous = lastCounted();
+    viewsInFlight.add(slug);
+    storage.set(viewKey(slug), String(Date.now())); // claim before the request (other tabs, re-renders)
+    enqueue(() => callCounter('hit', 'views', slug), { priority: true })
+      .then((value) => setStats(slug, { views: Math.max(value, getStats(slug).views ?? 0) }))
+      .catch((err) => {
+        // Release the claim only if the view certainly wasn't counted, so a later visit can count it
+        if (err?.notCounted) storage.set(viewKey(slug), String(previous));
+      })
+      .finally(() => viewsInFlight.delete(slug));
+    loadStats(slug, { priority: true });
+  };
 
-  // Sync state if slug changes or if storage changes in another component or tab
+  if (document.visibilityState === 'visible') {
+    count();
+    return undefined;
+  }
+  // Opened in a background tab: count it once the visitor actually looks at it
+  loadStats(slug);
+  const onVisible = () => {
+    if (document.visibilityState !== 'visible') return;
+    document.removeEventListener('visibilitychange', onVisible);
+    count();
+  };
+  document.addEventListener('visibilitychange', onVisible);
+  return () => document.removeEventListener('visibilitychange', onVisible);
+}
+
+/* ---------------------------------------------------------------- global wiring */
+
+if (hasWindow) {
+  // Other tabs changed something: drop our copy so the next read sees theirs
+  window.addEventListener('storage', (e) => {
+    if (!e.key) return;
+    const match = e.key.match(/^(pstats|plike):(.+)$/);
+    if (!match) return;
+    storage.refresh(e.key);
+    (match[1] === 'pstats' ? statsCache : likeCache).delete(match[2]);
+    emit();
+  });
+
+  if (STATS_WRITABLE) {
+    const resume = () => pendingLikeSlugs().forEach((slug) => scheduleSync(slug, 0));
+    window.addEventListener('online', resume);
+    // Flush unsent likes when the page is being closed or hidden
+    window.addEventListener('pagehide', () => {
+      pendingLikeSlugs().forEach((slug) => {
+        clearTimeout(syncTimers.get(slug));
+        syncLike(slug, { keepalive: true });
+      });
+    });
+    setTimeout(resume, 1500);
+  }
+}
+
+/* ---------------------------------------------------------------- hooks */
+
+function useStatsStore() {
+  return useSyncExternalStore(subscribe, getVersion, getVersion);
+}
+
+/** Likes for one post: { likes (number|null), isLiked, toggleLike, animating }. */
+export function usePostLikes(slug) {
+  useStatsStore();
+  const [animating, setAnimating] = useState(false);
+  const animTimer = useRef(null);
+
   useEffect(() => {
     if (!slug) return;
+    loadStats(slug, { priority: true });
+    // e.g. a like state carried over from the old implementation, or one that never sent
+    const state = getLikeState(slug);
+    if (state.want !== state.synced) scheduleSync(slug, 0);
+  }, [slug]);
 
-    try {
-      const storedCount = localStorage.getItem(`portfolio_likes_count_${slug}`);
-      if (storedCount !== null) {
-        const parsed = parseInt(storedCount, 10);
-        if (!isNaN(parsed)) setLikes(parsed);
-      } else {
-        setLikes(initialLikes);
-      }
+  useEffect(() => () => clearTimeout(animTimer.current), []);
 
-      const liked = localStorage.getItem(`portfolio_liked_${slug}`) === 'true';
-      setIsLiked(liked);
-    } catch (e) {
-      // ignore
-    }
-
-    // Fetch latest global count on mount
-    fetchCloudLikes();
-
-    const handleSync = (e) => {
-      const eventSlug =
-        e.detail?.slug ||
-        (e.key ? e.key.replace(/^portfolio_(liked|likes_count)_/, '') : null);
-
-      if (eventSlug && eventSlug === slug) {
-        try {
-          const updatedCount = localStorage.getItem(`portfolio_likes_count_${slug}`);
-          if (updatedCount !== null) {
-            const parsed = parseInt(updatedCount, 10);
-            if (!isNaN(parsed)) setLikes(parsed);
-          }
-          setIsLiked(localStorage.getItem(`portfolio_liked_${slug}`) === 'true');
-        } catch (err) {
-          // ignore
-        }
-      }
-    };
-
-    // Re-fetch when user returns to the page tab to get latest likes from others
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchCloudLikes();
-      }
-    };
-
-    window.addEventListener('storage', handleSync);
-    window.addEventListener('portfolio_like_change', handleSync);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('storage', handleSync);
-      window.removeEventListener('portfolio_like_change', handleSync);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [slug, initialLikes, fetchCloudLikes]);
-
-  const toggleLike = useCallback(() => {
-    if (!slug) return;
-
+  const toggle = useCallback(() => {
+    if (!slug) return false;
     setAnimating(true);
-    setTimeout(() => setAnimating(false), 600);
-
-    const nextLiked = !isLiked;
-
-    // Check if this visitor has ALREADY contributed a like to the cloud API
-    const hasContributed =
-      localStorage.getItem(`portfolio_has_contributed_${slug}`) === 'true' ||
-      inMemoryContributedLikes.has(slug);
-
-    // Stored cloud hits from previous fetch
-    let currentCloudHits = 0;
-    try {
-      const storedHits = localStorage.getItem(`portfolio_cloud_hits_${slug}`);
-      if (storedHits !== null) {
-        currentCloudHits = parseInt(storedHits, 10) || 0;
-      }
-    } catch (e) {}
-
-    // CRITICAL ANTI-HACK PROTECTION:
-    // Only send a /hit request to the cloud counter ONCE per visitor!
-    const shouldSendCloudHit = nextLiked && !hasContributed;
-
-    if (shouldSendCloudHit) {
-      inMemoryContributedLikes.add(slug);
-      try {
-        localStorage.setItem(`portfolio_has_contributed_${slug}`, 'true');
-      } catch (e) {}
-    }
-
-    const effectiveCloudHits = shouldSendCloudHit ? currentCloudHits + 1 : currentCloudHits;
-    const nextLikes = computeLikes(
-      initialLikes,
-      effectiveCloudHits,
-      nextLiked,
-      hasContributed || shouldSendCloudHit
-    );
-
-    setIsLiked(nextLiked);
-    setLikes(nextLikes);
-
-    try {
-      localStorage.setItem(`portfolio_liked_${slug}`, nextLiked ? 'true' : 'false');
-      localStorage.setItem(`portfolio_likes_count_${slug}`, nextLikes.toString());
-      if (shouldSendCloudHit) {
-        localStorage.setItem(`portfolio_cloud_hits_${slug}`, effectiveCloudHits.toString());
-      }
-
-      // Broadcast to other components in the same window (e.g. top & bottom buttons)
-      window.dispatchEvent(
-        new CustomEvent('portfolio_like_change', {
-          detail: { slug, likes: nextLikes, isLiked: nextLiked },
-        })
-      );
-    } catch (err) {
-      console.warn('Failed to save like state to localStorage:', err);
-    }
-
-    // Fire cloud hit ONCE if this is the visitor's first time liking
-    if (shouldSendCloudHit) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      fetch(`${COUNTER_API_BASE}/hit/${COUNTER_LIKES_NAMESPACE}/${slug}`, {
-        signal: controller.signal,
-      })
-        .then((res) => {
-          clearTimeout(timeoutId);
-          if (res.ok) return res.json();
-          throw new Error('Hit request failed');
-        })
-        .then((data) => {
-          if (data && typeof data.value === 'number') {
-            const syncedCloudHits = data.value;
-            try {
-              localStorage.setItem(`portfolio_cloud_hits_${slug}`, syncedCloudHits.toString());
-            } catch (e) {}
-            const syncedTotal = computeLikes(initialLikes, syncedCloudHits, true, true);
-            setLikes(syncedTotal);
-            try {
-              localStorage.setItem(`portfolio_likes_count_${slug}`, syncedTotal.toString());
-              window.dispatchEvent(
-                new CustomEvent('portfolio_like_change', {
-                  detail: { slug, likes: syncedTotal, isLiked: true },
-                })
-              );
-            } catch (e) {}
-          }
-        })
-        .catch(() => {
-          // Graceful fallback: local optimistic update remains valid
-        });
-    }
-
-    return nextLiked;
-  }, [slug, isLiked, initialLikes]);
+    clearTimeout(animTimer.current);
+    animTimer.current = setTimeout(() => setAnimating(false), 600);
+    return toggleLike(slug);
+  }, [slug]);
 
   return {
-    likes,
-    isLiked,
-    toggleLike,
+    likes: slug ? selectLikes(slug) : null,
+    isLiked: slug ? getLikeState(slug).want : false,
+    toggleLike: toggle,
     animating,
   };
 }
 
+/** Views for one post. Pass a slug only for a post that exists; it is counted once per day. */
+export function usePostViews(slug) {
+  useStatsStore();
+  useEffect(() => {
+    if (!slug) return undefined;
+    return recordView(slug);
+  }, [slug]);
+  return { views: slug ? getStats(slug).views : null };
+}
+
 /**
- * Hook to manage views for a blog post with:
- * 1. Global cloud counter API tracking (starting from 0, session-deduplicated hits)
- * 2. Caching in localStorage for instant rendering
- *
- * @param {string} slug - The blog post unique slug identifier.
- * @param {number} initialViews - Baseline view count (defaults to 0).
+ * Likes & views for a row on the Posts page. Counts load when the row scrolls near
+ * the viewport, so long lists stay inside the API's rate limit.
  */
-export function usePostViews(slug, initialViews = 0) {
-  const [views, setViews] = useState(() => {
-    if (!slug) return initialViews;
-    try {
-      const stored = localStorage.getItem(`portfolio_views_count_${slug}`);
-      if (stored !== null) {
-        const parsed = parseInt(stored, 10);
-        return !isNaN(parsed) ? parsed : initialViews;
-      }
-    } catch (e) {}
-    return initialViews;
-  });
+export function usePostRowStats(slug) {
+  useStatsStore();
+  const ref = useRef(null);
 
   useEffect(() => {
-    if (!slug) return;
-
-    let isMounted = true;
-    const sessionKey = `portfolio_viewed_session_${slug}`;
-    let alreadyViewed = false;
-
-    try {
-      alreadyViewed =
-        sessionStorage.getItem(sessionKey) === 'true' || inFlightViewHits.has(slug);
-      if (!alreadyViewed) {
-        // Synchronously claim session lock BEFORE network fetch to prevent double hit in React StrictMode
-        sessionStorage.setItem(sessionKey, 'true');
-        inFlightViewHits.add(slug);
-      }
-    } catch (e) {
-      alreadyViewed = inFlightViewHits.has(slug);
-      inFlightViewHits.add(slug);
+    const el = ref.current;
+    if (!slug || !el) return undefined;
+    if (typeof IntersectionObserver === 'undefined') {
+      loadStats(slug);
+      return undefined;
     }
-
-    // If not yet counted in this browser session, trigger hit (increment), else just get
-    const endpoint = alreadyViewed
-      ? `${COUNTER_API_BASE}/get/${COUNTER_VIEWS_NAMESPACE}/${slug}`
-      : `${COUNTER_API_BASE}/hit/${COUNTER_VIEWS_NAMESPACE}/${slug}`;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-    fetch(endpoint, { signal: controller.signal })
-      .then(async (res) => {
-        clearTimeout(timeoutId);
-        if (res.ok) return res.json();
-        // 404 on Abacus means key does not exist yet -> true 0 count
-        if (res.status === 404) return { value: 0 };
-        throw new Error('Views request failed');
-      })
-      .then((data) => {
-        if (!isMounted) return;
-        if (data && typeof data.value === 'number') {
-          const totalViews = (initialViews || 0) + data.value;
-          setViews(totalViews);
-          try {
-            localStorage.setItem(`portfolio_views_count_${slug}`, totalViews.toString());
-          } catch (e) {}
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          loadStats(slug);
+          io.disconnect();
         }
-      })
-      .catch(() => {
-        // Fallback: if offline, track session view locally once
-        if (!alreadyViewed) {
-          setViews((prev) => {
-            const next = prev + 1;
-            try {
-              localStorage.setItem(`portfolio_views_count_${slug}`, next.toString());
-            } catch (e) {}
-            return next;
-          });
-        }
-      });
+      },
+      { rootMargin: '200px 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [slug]);
 
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-    };
-  }, [slug, initialViews]);
-
-  return { views };
+  return { ref, likes: selectLikes(slug), views: getStats(slug).views };
 }
-
-/**
- * Utility function to get the current stored like count for a post.
- */
-export function getStoredLikes(slug, initialLikes = 0) {
-  if (!slug) return initialLikes;
-  try {
-    const stored = localStorage.getItem(`portfolio_likes_count_${slug}`);
-    if (stored !== null) {
-      const parsed = parseInt(stored, 10);
-      if (!isNaN(parsed)) return parsed;
-    }
-  } catch (err) {
-    // ignore
-  }
-  return initialLikes;
-}
-
-/**
- * Utility function to get the current stored views count for a post.
- */
-export function getStoredViews(slug, initialViews = 0) {
-  if (!slug) return initialViews;
-  try {
-    const stored = localStorage.getItem(`portfolio_views_count_${slug}`);
-    if (stored !== null) {
-      const parsed = parseInt(stored, 10);
-      if (!isNaN(parsed)) return parsed;
-    }
-  } catch (err) {
-    // ignore
-  }
-  return initialViews;
-}
-
-/**
- * Hook to retrieve and live-sync likes and views stats for all posts on the blog index page.
- */
-export function useBlogListStats(posts) {
-  const [stats, setStats] = useState(() => {
-    const map = {};
-    if (Array.isArray(posts)) {
-      posts.forEach((p) => {
-        map[p.slug] = {
-          likes: getStoredLikes(p.slug, 0),
-          views: getStoredViews(p.slug, 0),
-        };
-      });
-    }
-    return map;
-  });
-
-  const fetchedRef = useRef(false);
-
-  useEffect(() => {
-    if (!Array.isArray(posts) || posts.length === 0) return;
-    if (fetchedRef.current) return;
-    fetchedRef.current = true;
-
-    let isMounted = true;
-
-    Promise.all(
-      posts.map(async (post) => {
-        const slug = post.slug;
-        if (!slug) return null;
-
-        let cloudLikes = 0;
-        let cloudViews = 0;
-
-        try {
-          const lRes = await fetch(`${COUNTER_API_BASE}/get/${COUNTER_LIKES_NAMESPACE}/${slug}`);
-          if (lRes.ok) {
-            const data = await lRes.json();
-            if (typeof data.value === 'number') cloudLikes = data.value;
-          }
-        } catch (e) {}
-
-        try {
-          const vRes = await fetch(`${COUNTER_API_BASE}/get/${COUNTER_VIEWS_NAMESPACE}/${slug}`);
-          if (vRes.ok) {
-            const data = await vRes.json();
-            if (typeof data.value === 'number') cloudViews = data.value;
-          }
-        } catch (e) {}
-
-        const userLikedLocally = localStorage.getItem(`portfolio_liked_${slug}`) === 'true';
-        const hasContributedLocally =
-          localStorage.getItem(`portfolio_has_contributed_${slug}`) === 'true' ||
-          inMemoryContributedLikes.has(slug);
-        const totalLikes = computeLikes(0, cloudLikes, userLikedLocally, hasContributedLocally);
-
-        try {
-          localStorage.setItem(`portfolio_likes_count_${slug}`, totalLikes.toString());
-          localStorage.setItem(`portfolio_views_count_${slug}`, cloudViews.toString());
-        } catch (e) {}
-
-        return { slug, likes: totalLikes, views: cloudViews };
-      })
-    ).then((results) => {
-      if (!isMounted) return;
-      const nextMap = {};
-      results.forEach((item) => {
-        if (item) {
-          nextMap[item.slug] = { likes: item.likes, views: item.views };
-        }
-      });
-      setStats((prev) => ({ ...prev, ...nextMap }));
-    });
-
-    const handleSync = (e) => {
-      const eventSlug = e.detail?.slug;
-      if (eventSlug && e.detail?.likes !== undefined) {
-        setStats((prev) => ({
-          ...prev,
-          [eventSlug]: {
-            views: prev[eventSlug]?.views ?? getStoredViews(eventSlug, 0),
-            likes: e.detail.likes,
-          },
-        }));
-      }
-    };
-
-    window.addEventListener('portfolio_like_change', handleSync);
-
-    return () => {
-      isMounted = false;
-      window.removeEventListener('portfolio_like_change', handleSync);
-    };
-  }, [posts]);
-
-  return stats;
-}
-

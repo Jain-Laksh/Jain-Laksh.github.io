@@ -33,7 +33,7 @@ export default function Gallery() {
               <span>Work in Progress</span>
             </span>
 
-            <h2>Will be implemented soon!</h2>
+            <h2>Coming soon</h2>
 
             <p>
               This gallery space is currently under construction and will be updated soon with photo highlights from
