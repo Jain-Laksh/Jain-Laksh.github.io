@@ -22,7 +22,7 @@ export default function Footer() {
               href={s.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="footer-social-link"
+              className="icon-btn"
               aria-label={s.name}
               title={s.name}
             >
@@ -31,11 +31,9 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="footer-bottom">
-          <p>
-            © {new Date().getFullYear()} {profileData.name}.
-          </p>
-        </div>
+        <p className="footer-copy">
+          © {new Date().getFullYear()} {profileData.name}.
+        </p>
       </div>
     </footer>
   );

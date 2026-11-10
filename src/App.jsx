@@ -25,10 +25,10 @@ function ScrollReset() {
 
 export default function App() {
   return (
-    <div className="app-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="app-layout">
       <ScrollReset />
       <Navbar />
-      <main style={{ flex: 1 }}>
+      <main className="app-main">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/research" element={<Research />} />

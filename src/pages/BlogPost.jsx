@@ -160,24 +160,24 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <div className="container" style={{ paddingTop: 'calc(var(--navbar-height) + var(--space-16))' }}>
-        <div className="loading-spinner" />
+      <div className="container page">
+        <div className="loading-spinner" role="status" aria-label="Loading post" />
       </div>
     );
   }
 
   if (error || !postMeta) {
     return (
-      <div className="container" style={{ paddingTop: 'calc(var(--navbar-height) + var(--space-16))', paddingBottom: 'var(--space-20)' }}>
+      <div className="container page">
         <Link to="/blog" className="back-link">
           <FiArrowLeft />
           <span>Back to all posts</span>
         </Link>
-        <div className="empty-state">
+        <div className="empty">
           <h2>Post Not Found</h2>
           <p>{error || "The post you are looking for doesn't exist."}</p>
-          <div style={{ marginTop: 'var(--space-6)' }}>
-            <Link to="/blog" className="btn btn-primary">
+          <div style={{ marginTop: '24px' }}>
+            <Link to="/blog" className="btn btn-solid">
               View All Posts
             </Link>
           </div>
@@ -186,83 +186,72 @@ export default function BlogPost() {
     );
   }
 
+  const renderHearts = (list) =>
+    list.map((h) => (
+      <span key={h.id} className="floating-heart" style={{ left: `${h.x}%` }} aria-hidden="true">
+        ❤️
+      </span>
+    ));
+
   return (
-    <div className="container" style={{ paddingBottom: 'var(--space-20)' }}>
-      <div className="blog-post-layout">
-        <div className="blog-post-content">
+    <div className="container page">
+      <div className={`post-layout ${headings.length > 0 ? '' : 'no-toc'}`}>
+        <div className="post-main">
           <Link to="/blog" className="back-link">
             <FiArrowLeft />
             <span>Back to all posts</span>
           </Link>
 
-          <header className="blog-post-header">
-            <h1>{postMeta.title}</h1>
-            <div className="blog-post-meta">
-              <span className="blog-post-meta-item">
-                <FiCalendar style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+          <header className="post-head">
+            <h1 className="post-title">{postMeta.title}</h1>
+            <div className="post-meta">
+              <span className="post-meta-item">
+                <FiCalendar aria-hidden="true" />
                 {postMeta.date}
               </span>
               {postMeta.readTime && (
-                <span className="blog-post-meta-item">
-                  <FiClock style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                <span className="post-meta-item">
+                  <FiClock aria-hidden="true" />
                   {postMeta.readTime}
                 </span>
               )}
 
-              {/* Action buttons on top: Views badge, Like button with visible count & Share */}
-              <div className="blog-post-header-actions">
-                <div className="post-views-badge" title={`${views.toLocaleString()} total views`}>
-                  <FiEye className="views-icon" />
-                  <span className="views-count">{views.toLocaleString()}</span>
+              {/* Views badge, like button with visible count & share */}
+              <div className="post-actions">
+                <div className="views-badge" title={`${views.toLocaleString()} total views`}>
+                  <FiEye aria-hidden="true" />
+                  <span>{views.toLocaleString()}</span>
                   <span className="views-label">views</span>
                 </div>
 
                 <button
                   id="top-like-button"
+                  type="button"
                   onClick={() => handleLike(true)}
-                  className={`post-like-btn ${isLiked ? 'liked' : ''} ${animating ? 'like-pop' : ''}`}
-                  title={isLiked ? "You liked this post! Click to unlike" : "Like this post"}
-                  aria-label={isLiked ? "Unlike this post" : "Like this post"}
+                  className={`like-btn ${isLiked ? 'liked' : ''} ${animating ? 'like-pop' : ''}`}
+                  title={isLiked ? 'You liked this post! Click to unlike' : 'Like this post'}
+                  aria-label={isLiked ? 'Unlike this post' : 'Like this post'}
                   aria-pressed={isLiked}
                 >
-                  <span className="post-like-icon-wrap">
-                    {isLiked ? (
-                      <FaHeart className="heart-icon filled" />
-                    ) : (
-                      <FiHeart className="heart-icon" />
-                    )}
-                  </span>
-                  <span className="post-like-count">{likes}</span>
-                  {topFloatingHearts.map((h) => (
-                    <span
-                      key={h.id}
-                      className="floating-heart"
-                      style={{ left: `${h.x}%` }}
-                    >
-                      ❤️
-                    </span>
-                  ))}
+                  <span className="like-icon">{isLiked ? <FaHeart /> : <FiHeart />}</span>
+                  <span>{likes}</span>
+                  {renderHearts(topFloatingHearts)}
                 </button>
 
-                <button
-                  onClick={handleShare}
-                  className="btn btn-ghost btn-sm post-share-btn"
-                  title="Copy post link"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                >
-                  {copied ? <FiCheck style={{ color: 'var(--secondary)' }} /> : <FiShare2 />}
+                <button type="button" onClick={handleShare} className="share-btn" title="Copy post link">
+                  {copied ? <FiCheck className="is-ok" /> : <FiShare2 />}
                   <span>{copied ? 'Link Copied!' : 'Share'}</span>
                 </button>
               </div>
             </div>
 
-            <div className="blog-post-tags">
+            <ul className="chip-list post-tags">
               {postMeta.tags.map((tag) => (
-                <span key={tag} className="tag">
+                <li key={tag} className="chip">
                   {tag}
-                </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </header>
 
           <article className="markdown-body">
@@ -300,76 +289,46 @@ export default function BlogPost() {
             </Markdown>
           </article>
 
-          {/* End of Post Feedback & Like Callout Card */}
-          <section className="blog-post-feedback-section">
-            <div className="feedback-card">
-              <div className="feedback-card-glow" />
-              <div className="feedback-card-content">
-                <div className="feedback-badge">
-                  <span className="feedback-heart-badge">❤️</span>
-                  <span>Enjoyed this read?</span>
-                </div>
+          {/* End of post feedback & like */}
+          <section className="feedback" aria-labelledby="feedback-title">
+            <p className="feedback-kicker">Enjoyed this read?</p>
+            <h2 id="feedback-title" className="feedback-title">Did this post help you?</h2>
+            <p className="feedback-desc">
+              If this article helped you prepare for your interviews, understand tricky concepts,
+              or provided valuable insights, please consider giving it a like! It lets me know what
+              topics you find most useful.
+            </p>
 
-                <h3 className="feedback-title">Did this post help you?</h3>
-                <p className="feedback-desc">
-                  If this article helped you prepare for your interviews, understand tricky concepts,
-                  or provided valuable insights, please consider giving it a like! It lets me know what
-                  topics you find most useful.
-                </p>
+            <div className="feedback-actions">
+              <button
+                type="button"
+                onClick={() => handleLike(false)}
+                className={`like-cta ${isLiked ? 'liked' : ''} ${animating ? 'like-pop' : ''}`}
+                aria-label={isLiked ? 'Unlike this post' : 'Like this post'}
+                aria-pressed={isLiked}
+              >
+                <span className="like-icon">{isLiked ? <FaHeart /> : <FiHeart />}</span>
+                <span>{isLiked ? 'Liked — Thank you!' : 'Like this post'}</span>
+                <span className="like-cta-count">{likes}</span>
+                {renderHearts(bottomFloatingHearts)}
+              </button>
 
-                <div className="feedback-actions">
-                  <button
-                    onClick={() => handleLike(false)}
-                    className={`btn-like-cta ${isLiked ? 'liked' : ''} ${animating ? 'like-pop' : ''}`}
-                    aria-label={isLiked ? "Unlike this post" : "Like this post"}
-                    aria-pressed={isLiked}
-                  >
-                    <span className="cta-heart-wrap">
-                      {isLiked ? (
-                        <FaHeart className="heart-icon filled" />
-                      ) : (
-                        <FiHeart className="heart-icon" />
-                      )}
-                    </span>
-                    <span className="cta-label">
-                      {isLiked ? 'Liked — Thank you!' : 'Like this post'}
-                    </span>
-                    <span className="cta-count-pill">{likes}</span>
-                    {bottomFloatingHearts.map((h) => (
-                      <span
-                        key={h.id}
-                        className="floating-heart"
-                        style={{ left: `${h.x}%` }}
-                      >
-                        ❤️
-                      </span>
-                    ))}
-                  </button>
-
-                  <button
-                    onClick={handleShare}
-                    className="btn btn-ghost feedback-share-btn"
-                    title="Share article link"
-                  >
-                    {copied ? <FiCheck style={{ color: 'var(--secondary)' }} /> : <FiShare2 />}
-                    <span>{copied ? 'Link Copied!' : 'Share Post'}</span>
-                  </button>
-                </div>
-
-                {isLiked && (
-                  <div className="feedback-thankyou-note">
-                    <span>🎉 Thank you for supporting this article! Your feedback means a lot.</span>
-                  </div>
-                )}
-              </div>
+              <button type="button" onClick={handleShare} className="btn btn-line" title="Share article link">
+                {copied ? <FiCheck className="is-ok" /> : <FiShare2 />}
+                <span>{copied ? 'Link Copied!' : 'Share Post'}</span>
+              </button>
             </div>
+
+            {isLiked && (
+              <p className="feedback-thanks">🎉 Thank you for supporting this article! Your feedback means a lot.</p>
+            )}
           </section>
         </div>
 
         {/* Table of Contents Sticky Sidebar */}
         {headings.length > 0 && (
-          <aside className="blog-post-toc">
-            <h5>Table of Contents</h5>
+          <aside className="toc" aria-label="Table of Contents">
+            <h2 className="toc-title">Table of Contents</h2>
             <nav className="toc-list">
               {headings.map((h, idx) => (
                 <a
@@ -384,29 +343,24 @@ export default function BlogPost() {
             </nav>
 
             {/* Sidebar quick like & stats */}
-            <div className="toc-feedback">
-              <div className="toc-views-badge" title={`${views.toLocaleString()} total views`}>
-                <FiEye style={{ marginRight: '6px', color: 'var(--secondary)' }} />
+            <div className="toc-actions">
+              <div className="toc-views" title={`${views.toLocaleString()} total views`}>
+                <FiEye aria-hidden="true" />
                 <span>{views.toLocaleString()} views</span>
               </div>
               <button
+                type="button"
                 onClick={() => handleLike(true)}
-                className={`toc-like-btn ${isLiked ? 'liked' : ''} ${animating ? 'like-pop' : ''}`}
-                title={isLiked ? "You liked this post!" : "Like this post"}
-                aria-label={isLiked ? "Unlike this post" : "Like this post"}
+                className={`toc-like ${isLiked ? 'liked' : ''} ${animating ? 'like-pop' : ''}`}
+                title={isLiked ? 'You liked this post!' : 'Like this post'}
+                aria-label={isLiked ? 'Unlike this post' : 'Like this post'}
               >
-                {isLiked ? (
-                  <FaHeart className="heart-icon filled" />
-                ) : (
-                  <FiHeart className="heart-icon" />
-                )}
-                <span>{likes} {likes === 1 ? 'like' : 'likes'}</span>
+                {isLiked ? <FaHeart /> : <FiHeart />}
+                <span>
+                  {likes} {likes === 1 ? 'like' : 'likes'}
+                </span>
               </button>
-              <button
-                onClick={scrollToTop}
-                className="toc-scroll-top-btn"
-                title="Scroll to top of post"
-              >
+              <button type="button" onClick={scrollToTop} className="toc-top" title="Scroll to top of post">
                 <FiArrowUp />
                 <span>Top</span>
               </button>

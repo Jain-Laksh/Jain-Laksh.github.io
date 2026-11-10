@@ -8,7 +8,7 @@ export default function ScrollToTop() {
     const handleScroll = () => {
       setVisible(window.scrollY > 300);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -22,7 +22,7 @@ export default function ScrollToTop() {
   return (
     <button
       onClick={scrollToTop}
-      className={`scroll-to-top ${visible ? 'visible' : ''}`}
+      className={`to-top ${visible ? "visible" : ""}`}
       aria-label="Scroll to top"
       title="Scroll to top"
     >

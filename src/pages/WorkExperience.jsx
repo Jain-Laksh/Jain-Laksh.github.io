@@ -1,59 +1,41 @@
 import React from 'react';
 import { FiMapPin, FiCalendar, FiExternalLink } from 'react-icons/fi';
 import workData from '../data/workExperience.json';
+import { PageHead } from '../components/Shared/PageHead';
 
 export default function WorkExperience() {
   return (
-    <div
-      className="container"
-      style={{
-        paddingTop: 'calc(var(--navbar-height) + var(--space-8))',
-        paddingBottom: 'var(--space-20)',
-      }}
-    >
-      {/* Header */}
-      <div className="page-header">
-        <span className="section-label">Career & Industry</span>
-        <h1>Work Experience</h1>
-        <p className="page-subtitle">
-          My professional roles, research fellowships, and industry internships in AI and software engineering.
-        </p>
-      </div>
+    <div className="container page">
+      <PageHead label="Career & Industry" title="Work Experience">
+        My professional roles, research fellowships, and industry internships in AI and software engineering.
+      </PageHead>
 
       {/* Timeline */}
-      <div className="work-timeline">
+      <ol className="timeline">
         {workData.map((item) => (
-          <div key={item.id} className="work-timeline-item">
-            <div className="work-timeline-dot" />
-            <div className="card work-card">
-              <div className="work-card-header">
-                <div>
-                  <h3 className="work-card-company">{item.company}</h3>
-                  {item.department && (
-                    <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-tertiary)', margin: '0 0 4px 0' }}>
-                      {item.department}
-                    </p>
-                  )}
-                  <p className="work-card-role">{item.role}</p>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                  <span className="work-card-period">
-                    <FiCalendar style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                    {item.startDate} — {item.endDate}
-                  </span>
-                  {item.location && (
-                    <span className="work-card-location" style={{ margin: 0 }}>
-                      <FiMapPin style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                      {item.location}
-                    </span>
-                  )}
-                </div>
-              </div>
+          <li key={item.id} className="tl-item">
+            <div className="tl-meta">
+              <span className="tl-period">
+                <FiCalendar aria-hidden="true" />
+                {item.startDate} — {item.endDate}
+              </span>
+              {item.location && (
+                <span>
+                  <FiMapPin aria-hidden="true" />
+                  {item.location}
+                </span>
+              )}
+            </div>
 
-              <p>{item.description}</p>
+            <div>
+              <h2 className="tl-company">{item.company}</h2>
+              {item.department && <p className="tl-dept">{item.department}</p>}
+              <p className="tl-role">{item.role}</p>
+
+              <p className="tl-desc">{item.description}</p>
 
               {item.highlights && item.highlights.length > 0 && (
-                <ul className="work-card-highlights">
+                <ul className="tl-highlights">
                   {item.highlights.map((highlight, idx) => (
                     <li key={idx}>{highlight}</li>
                   ))}
@@ -61,14 +43,8 @@ export default function WorkExperience() {
               )}
 
               {item.link && (
-                <div style={{ marginTop: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="pub-link"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                  >
+                <div className="tl-link">
+                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="pub-action">
                     <FiExternalLink />
                     <span>{item.linkText || 'Project / Demo Link'}</span>
                   </a>
@@ -76,31 +52,26 @@ export default function WorkExperience() {
               )}
 
               {item.tags && item.tags.length > 0 && (
-                <div className="work-card-tags">
+                <ul className="chip-list tl-tags">
                   {item.tags.map((tag) => (
-                    <span key={tag} className="tag">
+                    <li key={tag} className="chip">
                       {tag}
-                    </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
 
               {item.photos && item.photos.length > 0 && (
-                <div className="work-card-photos">
+                <div className="tl-photos">
                   {item.photos.map((photo, pIdx) => (
-                    <img
-                      key={pIdx}
-                      src={photo}
-                      alt={`${item.company} moment ${pIdx + 1}`}
-                      className="work-card-photo"
-                    />
+                    <img key={pIdx} src={photo} alt={`${item.company} moment ${pIdx + 1}`} loading="lazy" />
                   ))}
                 </div>
               )}
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   );
 }

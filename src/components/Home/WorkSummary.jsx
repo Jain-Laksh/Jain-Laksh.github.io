@@ -1,39 +1,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight } from 'react-icons/fi';
 import workData from '../../data/workExperience.json';
 
 export default function WorkSummary() {
   // Kabal Research is kept only in the dedicated Work Experience tab
   const displayWork = workData.filter((item) => item.id !== 'kabal-research-2024');
   return (
-    <section className="section section-alt">
+    <section className="section">
       <div className="container">
-        <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <span className="section-label">Experience</span>
-            <h2>Work Experience</h2>
-            <p className="section-subtitle">Where I've worked and conducted research.</p>
-          </div>
-          <Link to="/work" className="btn btn-outline btn-sm">
-            <span>View Full Timeline</span>
-            <FiArrowRight />
-          </Link>
-        </div>
-
-        <div className="work-summary-grid">
-          {displayWork.map((item) => (
-            <div key={item.id} className="card work-summary-card">
-              <div className="work-dot" />
-              <div className="work-summary-info">
-                <h4>{item.company}</h4>
-                <p className="work-summary-role">{item.role}</p>
-                <p className="work-summary-period">
-                  {item.startDate} — {item.endDate} {item.location && `• ${item.location}`}
-                </p>
-              </div>
+        <header className="section-head margin-grid">
+          <p className="margin-label">Experience</p>
+          <div className="section-head-row">
+            <div>
+              <h2>Work Experience</h2>
+              <p className="section-lede">Where I've worked and conducted research.</p>
             </div>
-          ))}
+            <Link to="/work" className="text-link">
+              View Full Timeline
+            </Link>
+          </div>
+        </header>
+
+        <div className="margin-grid">
+          <div aria-hidden="true" />
+          <ul className="work-rows">
+            {displayWork.map((item) => (
+              <li key={item.id} className="work-row">
+                <h3>{item.company}</h3>
+                <p className="work-row-role">{item.role}</p>
+                <p className="work-row-meta">
+                  <span>
+                    {item.startDate} — {item.endDate}
+                  </span>
+                  {item.location && <span>{item.location}</span>}
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

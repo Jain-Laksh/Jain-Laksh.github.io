@@ -1,57 +1,51 @@
 import React, { useState } from 'react';
 import { FaGithub, FaLinkedin, FaGraduationCap, FaEnvelope, FaInstagram, FaXTwitter } from 'react-icons/fa6';
-import { FiDownload, FiExternalLink, FiFileText, FiMapPin, FiMail, FiPhone, FiAward, FiCheckCircle } from 'react-icons/fi';
+import { FiDownload, FiExternalLink, FiFileText, FiMapPin, FiMail, FiPhone } from 'react-icons/fi';
 import profileData from '../data/profile.json';
 import workData from '../data/workExperience.json';
 import publicationsData from '../data/publications.json';
 import achievementsData from '../data/achievements.json';
+import { PageHead } from '../components/Shared/PageHead';
 
 export default function Connect() {
-  // Default to 'embed' (PDF View) so user immediately sees their uploaded resume
+  // Default to 'embed' (PDF View) so the uploaded resume is visible immediately
   const [cvViewMode, setCvViewMode] = useState('embed');
-  const [pdfLoadError, setPdfLoadError] = useState(false);
 
   const socialsList = [
     profileData.email && {
       name: 'Email',
       handle: profileData.email,
       url: `mailto:${profileData.email}`,
-      iconClass: 'email',
       icon: <FaEnvelope />,
     },
     profileData.socials?.github && {
       name: 'GitHub',
       handle: '@' + (profileData.socials.github.split('/').filter(Boolean).pop() || 'github'),
       url: profileData.socials.github,
-      iconClass: 'github',
       icon: <FaGithub />,
     },
     profileData.socials?.linkedin && {
       name: 'LinkedIn',
       handle: profileData.name,
       url: profileData.socials.linkedin,
-      iconClass: 'linkedin',
       icon: <FaLinkedin />,
     },
     profileData.socials?.googleScholar && {
       name: 'Google Scholar',
       handle: 'Citations & Papers',
       url: profileData.socials.googleScholar,
-      iconClass: 'scholar',
       icon: <FaGraduationCap />,
     },
     profileData.socials?.twitter && {
       name: 'X / Twitter',
       handle: '@' + (profileData.socials.twitter.split('/').filter(Boolean).pop() || 'twitter'),
       url: profileData.socials.twitter,
-      iconClass: 'twitter',
       icon: <FaXTwitter />,
     },
     profileData.socials?.instagram && {
       name: 'Instagram',
       handle: '@' + (profileData.socials.instagram.split('/').filter(Boolean).pop() || 'instagram'),
       url: profileData.socials.instagram,
-      iconClass: 'instagram',
       icon: <FaInstagram />,
     },
   ].filter(Boolean);
@@ -61,37 +55,20 @@ export default function Connect() {
   const cvUrl = rawCv.startsWith('http') ? rawCv : `${baseUrl}/${rawCv.replace(/^\.?\//, '')}`;
 
   return (
-    <div
-      className="container"
-      style={{
-        paddingTop: 'calc(var(--navbar-height) + var(--space-8))',
-        paddingBottom: 'var(--space-20)',
-      }}
-    >
-      {/* Header */}
-      <div className="page-header">
-        <span className="section-label">Get in Touch</span>
-        <h1>Connect & Curriculum Vitae</h1>
-        <p className="page-subtitle">
-          Feel free to reach out for research collaborations, engineering opportunities, or to discuss new ideas!
-        </p>
-      </div>
+    <div className="container page">
+      <PageHead label="Get in Touch" title="Connect & Curriculum Vitae">
+        Feel free to reach out for research collaborations, engineering opportunities, or to discuss new ideas!
+      </PageHead>
 
-      {/* Socials Grid */}
-      <div className="socials-grid">
+      {/* Socials */}
+      <div className="contact-list">
         {socialsList.map((item) => (
-          <a
-            key={item.name}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social-card"
-          >
-            <div className={`social-card-icon ${item.iconClass}`}>
+          <a key={item.name} href={item.url} target="_blank" rel="noopener noreferrer" className="contact">
+            <span className="contact-icon" aria-hidden="true">
               {item.icon}
-            </div>
-            <div className="social-card-info">
-              <h4>{item.name}</h4>
+            </span>
+            <div>
+              <h3>{item.name}</h3>
               <p>{item.handle}</p>
             </div>
           </a>
@@ -99,56 +76,27 @@ export default function Connect() {
       </div>
 
       {/* CV Section */}
-      <div style={{ marginTop: 'var(--space-10)' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 'var(--space-4)',
-            marginBottom: 'var(--space-6)',
-          }}
-        >
+      <section aria-labelledby="cv-title">
+        <div className="cv-head">
           <div>
-            <h3>Curriculum Vitae</h3>
-            <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--fs-sm)', marginTop: '4px' }}>
-              Academic & Professional Profile • Updated 2026
-            </p>
+            <h2 id="cv-title">Curriculum Vitae</h2>
+            <p className="cv-sub">Academic & Professional Profile, updated 2026</p>
           </div>
 
-          <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-            {/* View Mode Toggle */}
-            <div
-              style={{
-                display: 'inline-flex',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-full)',
-                padding: '3px',
-              }}
-            >
-              <button
-                onClick={() => setCvViewMode('text')}
-                className={`tag tag-clickable ${cvViewMode === 'text' ? 'tag-active' : ''}`}
-                style={{ borderRadius: 'var(--radius-full)', border: 'none' }}
-              >
+          <div className="cv-controls">
+            <div className="seg" role="group" aria-label="CV view">
+              <button type="button" aria-pressed={cvViewMode === 'text'} onClick={() => setCvViewMode('text')}>
                 Web Summary
               </button>
-              <button
-                onClick={() => setCvViewMode('embed')}
-                className={`tag tag-clickable ${cvViewMode === 'embed' ? 'tag-active' : ''}`}
-                style={{ borderRadius: 'var(--radius-full)', border: 'none' }}
-              >
+              <button type="button" aria-pressed={cvViewMode === 'embed'} onClick={() => setCvViewMode('embed')}>
                 PDF View
               </button>
             </div>
 
-            {/* Download PDF link */}
             <a
               href={cvUrl}
               download="Laksh_Jain_CV.pdf"
-              className="btn btn-primary btn-sm"
+              className="btn btn-solid btn-sm"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -158,41 +106,25 @@ export default function Connect() {
           </div>
         </div>
 
-        {/* CV Viewer Box */}
-        <div className="cv-viewer">
-          <div className="cv-viewer-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FiFileText style={{ color: 'var(--primary)' }} />
-              <h4 style={{ margin: 0 }}>{profileData.name} — Curriculum Vitae</h4>
-            </div>
-            <a
-              href={cvUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-ghost btn-sm"
-            >
+        <div className="cv-frame">
+          <div className="cv-frame-bar">
+            <h3>
+              <FiFileText aria-hidden="true" />
+              {profileData.name} — Curriculum Vitae
+            </h3>
+            <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="btn btn-quiet btn-sm">
               <FiExternalLink />
               <span>Open PDF in New Tab</span>
             </a>
           </div>
 
           {cvViewMode === 'embed' ? (
-            <div style={{ width: '100%', minHeight: '750px', height: '82vh', position: 'relative' }}>
-              <object
-                data={`${cvUrl}#view=FitH`}
-                type="application/pdf"
-                className="cv-viewer-embed"
-                style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-              >
-                <iframe
-                  src={`${cvUrl}#view=FitH`}
-                  title="Curriculum Vitae PDF"
-                  className="cv-viewer-embed"
-                  style={{ width: '100%', height: '100%', border: 'none' }}
-                >
-                  <div style={{ padding: 'var(--space-10)', textAlign: 'center' }}>
-                    <p style={{ marginBottom: 'var(--space-4)' }}>PDF preview could not be displayed directly.</p>
-                    <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <div className="cv-embed">
+              <object data={`${cvUrl}#view=FitH`} type="application/pdf" aria-label="Curriculum Vitae PDF">
+                <iframe src={`${cvUrl}#view=FitH`} title="Curriculum Vitae PDF">
+                  <div className="cv-embed-fallback">
+                    <p>PDF preview could not be displayed directly.</p>
+                    <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="btn btn-solid">
                       Open PDF in New Tab
                     </a>
                   </div>
@@ -201,39 +133,25 @@ export default function Connect() {
             </div>
           ) : (
             /* Structured Web CV summary */
-            <div style={{ padding: 'var(--space-8) var(--space-10)', maxWidth: '840px', margin: '0 auto' }}>
-              {/* Header Box */}
-              <div
-                style={{
-                  borderBottom: '2px solid var(--border)',
-                  paddingBottom: 'var(--space-6)',
-                  marginBottom: 'var(--space-8)',
-                }}
-              >
-                <h2 style={{ margin: '0 0 6px 0', fontSize: 'var(--fs-2xl)' }}>{profileData.name}</h2>
-                <p style={{ color: 'var(--primary)', fontWeight: 600, fontSize: 'var(--fs-md)', margin: '0 0 8px 0' }}>
-                  {profileData.title} • {profileData.institution}
+            <div className="cv-summary">
+              <div className="cv-summary-head">
+                <h2>{profileData.name}</h2>
+                <p className="cv-summary-title">
+                  <span>{profileData.title}</span>
+                  <span>{profileData.institution}</span>
                 </p>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '1rem',
-                    color: 'var(--text-tertiary)',
-                    fontSize: 'var(--fs-sm)',
-                  }}
-                >
+                <div className="cv-contact-line">
                   <span>
-                    <FiMapPin style={{ marginRight: '4px', verticalAlign: 'middle', color: 'var(--accent)' }} />
+                    <FiMapPin aria-hidden="true" />
                     {profileData.location}
                   </span>
                   <span>
-                    <FiMail style={{ marginRight: '4px', verticalAlign: 'middle', color: 'var(--primary)' }} />
+                    <FiMail aria-hidden="true" />
                     <a href={`mailto:${profileData.email}`}>{profileData.email}</a>
                   </span>
                   {profileData.phone && (
                     <span>
-                      <FiPhone style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                      <FiPhone aria-hidden="true" />
                       {profileData.phone}
                     </span>
                   )}
@@ -241,58 +159,48 @@ export default function Connect() {
               </div>
 
               {/* Education */}
-              <div style={{ marginBottom: 'var(--space-8)' }}>
-                <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                  Education
-                </h3>
-                {profileData.education && profileData.education.length > 0 ? (
-                  profileData.education.map((edu, idx) => (
-                    <div key={idx} style={{ marginBottom: 'var(--space-4)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                        <strong>{edu.institution}</strong>
-                        <span style={{ color: 'var(--text-tertiary)', fontSize: 'var(--fs-sm)' }}>{edu.period}</span>
-                      </div>
-                      <p style={{ margin: '2px 0', color: 'var(--text-secondary)' }}>
-                        {edu.degree} • <strong style={{ color: 'var(--accent)' }}>{edu.grade}</strong>
-                      </p>
-                      {edu.details && (
-                        <p style={{ margin: 0, fontSize: 'var(--fs-xs)', color: 'var(--text-tertiary)' }}>
-                          {edu.details}
+              <div className="cv-section">
+                <h3>Education</h3>
+                <div>
+                  {profileData.education && profileData.education.length > 0 ? (
+                    profileData.education.map((edu, idx) => (
+                      <div key={idx} className="cv-entry">
+                        <div className="cv-entry-head">
+                          <strong>{edu.institution}</strong>
+                          <span className="cv-entry-when">{edu.period}</span>
+                        </div>
+                        <p>
+                          {edu.degree}, <span className="cv-grade">{edu.grade}</span>
                         </p>
-                      )}
+                        {edu.details && <p className="cv-small">{edu.details}</p>}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="cv-entry">
+                      <div className="cv-entry-head">
+                        <strong>{profileData.institution}</strong>
+                        <span className="cv-entry-when">2023 — 2027</span>
+                      </div>
+                      <p>B.Tech in Artificial Intelligence, CPI: 9.05/10</p>
                     </div>
-                  ))
-                ) : (
-                  <div style={{ marginBottom: 'var(--space-3)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <strong>{profileData.institution}</strong>
-                      <span style={{ color: 'var(--text-tertiary)', fontSize: 'var(--fs-sm)' }}>2023 — 2027</span>
-                    </div>
-                    <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
-                      B.Tech in Artificial Intelligence • CPI: 9.05/10
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {/* Achievements */}
-              <div style={{ marginBottom: 'var(--space-8)' }}>
-                <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                  Key Honors & Achievements
-                </h3>
-                <ul style={{ paddingLeft: '1.25rem', fontSize: 'var(--fs-sm)', color: 'var(--text-secondary)' }}>
+              <div className="cv-section">
+                <h3>Key Honors & Achievements</h3>
+                <ul className="cv-bullets cv-honors">
                   {achievementsData.map((ach) => (
-                    <li key={ach.id} style={{ marginBottom: '6px' }}>
+                    <li key={ach.id}>
                       <strong>{ach.year}</strong>: {ach.title}
                       {ach.link && (
-                        <a
-                          href={ach.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ marginLeft: '6px', color: 'var(--primary)', fontSize: 'var(--fs-xs)' }}
-                        >
-                          [Link ↗]
-                        </a>
+                        <>
+                          {' '}
+                          <a href={ach.link} target="_blank" rel="noopener noreferrer" className="cv-inline-link">
+                            [Link ↗]
+                          </a>
+                        </>
                       )}
                     </li>
                   ))}
@@ -300,113 +208,97 @@ export default function Connect() {
               </div>
 
               {/* Research Publications */}
-              <div style={{ marginBottom: 'var(--space-8)' }}>
-                <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                  Publications
-                </h3>
-                {publicationsData.map((pub) => (
-                  <div key={pub.id} style={{ marginBottom: 'var(--space-4)' }}>
-                    <strong>{pub.title}</strong>
-                    <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-tertiary)', margin: '2px 0' }}>
-                      {pub.authors.join(', ')} • <em>{pub.venue}</em>
-                    </p>
-                    {pub.equalContribution && (
-                      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-tertiary)', margin: '0 0 4px 0', fontStyle: 'italic' }}>
-                        {pub.equalContribution}
+              <div className="cv-section">
+                <h3>Publications</h3>
+                <div>
+                  {publicationsData.map((pub) => (
+                    <div key={pub.id} className="cv-entry">
+                      <strong className="cv-entry-title">{pub.title}</strong>
+                      <p className="cv-small">
+                        {pub.authors.join(', ')}. <em>{pub.venue}</em>
                       </p>
-                    )}
-                    <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: 'var(--fs-xs)', flexWrap: 'wrap' }}>
-                      {pub.links?.paper && (
-                        <a href={pub.links.paper} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
-                          [Paper PDF ↗]
-                        </a>
+                      {pub.equalContribution && (
+                        <p className="cv-small">
+                          <em>{pub.equalContribution}</em>
+                        </p>
                       )}
-                      {pub.links?.website && (
-                        <a href={pub.links.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
-                          [Project Page ↗]
-                        </a>
-                      )}
-                      {pub.links?.code && (
-                        <a href={pub.links.code} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
-                          [Code ↗]
-                        </a>
-                      )}
-                      {pub.links?.dataset && (
-                        <a href={pub.links.dataset} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
-                          [Dataset (Kaggle) ↗]
-                        </a>
-                      )}
+                      <div className="cv-links">
+                        {pub.links?.paper && (
+                          <a href={pub.links.paper} target="_blank" rel="noopener noreferrer">
+                            [Paper PDF ↗]
+                          </a>
+                        )}
+                        {pub.links?.website && (
+                          <a href={pub.links.website} target="_blank" rel="noopener noreferrer">
+                            [Project Page ↗]
+                          </a>
+                        )}
+                        {pub.links?.code && (
+                          <a href={pub.links.code} target="_blank" rel="noopener noreferrer">
+                            [Code ↗]
+                          </a>
+                        )}
+                        {pub.links?.dataset && (
+                          <a href={pub.links.dataset} target="_blank" rel="noopener noreferrer">
+                            [Dataset (Kaggle) ↗]
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
               {/* Work Experience */}
-              <div style={{ marginBottom: 'var(--space-8)' }}>
-                <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                  Work Experience & Internships
-                </h3>
-                {workData.map((w) => (
-                  <div key={w.id} style={{ marginBottom: 'var(--space-6)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                      <strong>{w.role} — {w.company}</strong>
-                      <span style={{ color: 'var(--text-tertiary)', fontSize: 'var(--fs-xs)' }}>
-                        {w.startDate} - {w.endDate}
-                      </span>
-                    </div>
-                    {w.department && (
-                      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-tertiary)', margin: '2px 0' }}>
-                        {w.department}
-                      </p>
-                    )}
-                    <p style={{ fontSize: 'var(--fs-sm)', marginTop: '4px', marginBottom: '6px' }}>{w.description}</p>
-                    {w.highlights && (
-                      <ul style={{ paddingLeft: '1.25rem', fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)' }}>
-                        {w.highlights.map((h, i) => (
-                          <li key={i} style={{ marginBottom: '2px' }}>{h}</li>
-                        ))}
-                      </ul>
-                    )}
-                    {w.link && (
-                      <div style={{ marginTop: '4px' }}>
-                        <a
-                          href={w.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ fontSize: 'var(--fs-xs)', color: 'var(--primary)' }}
-                        >
-                          ↗ {w.linkText || 'Project / Demo'}
-                        </a>
+              <div className="cv-section">
+                <h3>Work Experience & Internships</h3>
+                <div>
+                  {workData.map((w) => (
+                    <div key={w.id} className="cv-entry">
+                      <div className="cv-entry-head">
+                        <strong>
+                          {w.role} — {w.company}
+                        </strong>
+                        <span className="cv-entry-when">
+                          {w.startDate} - {w.endDate}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                ))}
+                      {w.department && <p className="cv-small">{w.department}</p>}
+                      <p>{w.description}</p>
+                      {w.highlights && (
+                        <ul className="cv-bullets">
+                          {w.highlights.map((h, i) => (
+                            <li key={i}>{h}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {w.link && (
+                        <div className="cv-links">
+                          <a href={w.link} target="_blank" rel="noopener noreferrer">
+                            ↗ {w.linkText || 'Project / Demo'}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Technical Skills */}
               {profileData.technicalSkills && (
-                <div style={{ marginBottom: 'var(--space-8)' }}>
-                  <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                    Technical Skills
-                  </h3>
-                  <div style={{ fontSize: 'var(--fs-sm)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div className="cv-section">
+                  <h3>Technical Skills</h3>
+                  <div className="cv-skills">
                     <div>
                       <strong>Programming Languages:</strong>{' '}
-                      <span style={{ color: 'var(--text-secondary)' }}>
-                        {profileData.technicalSkills.languages?.join(', ')}
-                      </span>
+                      <span>{profileData.technicalSkills.languages?.join(', ')}</span>
                     </div>
                     <div>
-                      <strong>Tools & Platforms:</strong>{' '}
-                      <span style={{ color: 'var(--text-secondary)' }}>
-                        {profileData.technicalSkills.tools?.join(', ')}
-                      </span>
+                      <strong>Tools & Platforms:</strong> <span>{profileData.technicalSkills.tools?.join(', ')}</span>
                     </div>
                     <div>
                       <strong>Libraries & Frameworks:</strong>{' '}
-                      <span style={{ color: 'var(--text-secondary)' }}>
-                        {profileData.technicalSkills.frameworks?.join(', ')}
-                      </span>
+                      <span>{profileData.technicalSkills.frameworks?.join(', ')}</span>
                     </div>
                   </div>
                 </div>
@@ -414,43 +306,41 @@ export default function Connect() {
 
               {/* Relevant Coursework */}
               {profileData.coursework && (
-                <div style={{ marginBottom: 'var(--space-8)' }}>
-                  <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                    Relevant Coursework & Academic Performance
-                  </h3>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div className="cv-section">
+                  <h3>Relevant Coursework & Academic Performance</h3>
+                  <ul className="chip-list">
                     {profileData.coursework.map((c, cIdx) => (
-                      <span key={cIdx} className="tag">
+                      <li key={cIdx} className="chip">
                         {c}
-                      </span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               )}
 
               {/* Positions of Responsibility */}
               {profileData.positionsOfResponsibility && (
-                <div>
-                  <h3 style={{ fontSize: 'var(--fs-xl)', marginBottom: 'var(--space-4)', color: 'var(--primary)' }}>
-                    Leadership & Positions of Responsibility
-                  </h3>
-                  {profileData.positionsOfResponsibility.map((pos, pIdx) => (
-                    <div key={pIdx} style={{ marginBottom: 'var(--space-4)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                        <strong>{pos.role}</strong>
-                        <span style={{ color: 'var(--text-tertiary)', fontSize: 'var(--fs-xs)' }}>{pos.period}</span>
+                <div className="cv-section">
+                  <h3>Leadership & Positions of Responsibility</h3>
+                  <div>
+                    {profileData.positionsOfResponsibility.map((pos, pIdx) => (
+                      <div key={pIdx} className="cv-entry">
+                        <div className="cv-entry-head">
+                          <strong>{pos.role}</strong>
+                          <span className="cv-entry-when">{pos.period}</span>
+                        </div>
+                        <p className="cv-small">
+                          <em>{pos.organization}</em> — {pos.details}
+                        </p>
                       </div>
-                      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-secondary)', margin: '2px 0' }}>
-                        <em>{pos.organization}</em> — {pos.details}
-                      </p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

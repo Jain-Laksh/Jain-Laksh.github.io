@@ -14,7 +14,8 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -35,24 +36,22 @@ export default function Navbar() {
   const isMoreActive = location.pathname.startsWith('/gallery');
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="navbar-inner">
-        <Link to="/" className="navbar-logo">
-          <div className="navbar-logo-icon">
+    <nav className={`nav ${scrolled || mobileMenuOpen ? 'is-scrolled' : ''}`} aria-label="Main">
+      <div className="nav-inner">
+        <Link to="/" className="nav-brand">
+          <span className="nav-mark" aria-hidden="true">
             {profileData.initials || 'YN'}
-          </div>
+          </span>
           <span>{profileData.name}</span>
         </Link>
 
         {/* Desktop Nav Links */}
-        <div className="navbar-links">
+        <div className="nav-links">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
-              className={({ isActive }) =>
-                `navbar-link ${isActive ? 'active' : ''}`
-              }
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
               end={link.path === '/'}
             >
               {link.name}
@@ -60,33 +59,33 @@ export default function Navbar() {
           ))}
 
           {/* More Dropdown */}
-          <div className="navbar-item-dropdown">
+          <div className="nav-more">
             <button
               type="button"
-              className={`navbar-link navbar-dropdown-trigger ${isMoreActive ? 'active' : ''}`}
+              className={`nav-link ${isMoreActive ? 'active' : ''}`}
+              aria-haspopup="true"
             >
               <span>More</span>
-              <FiChevronDown className="dropdown-arrow" />
+              <FiChevronDown className="nav-chevron" aria-hidden="true" />
             </button>
-            <div className="navbar-dropdown-menu">
-              <NavLink to="/gallery" className="navbar-dropdown-link">
-                <FiImage style={{ color: 'var(--primary)', fontSize: '15px' }} />
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '10px' }}>
-                  <span>Gallery</span>
-                  <span className="tag" style={{ fontSize: '10px', padding: '1px 6px', background: 'var(--tag-orange-bg)', color: 'var(--tag-orange-text)' }}>
-                    WIP
-                  </span>
-                </div>
+            <div className="nav-more-menu">
+              <NavLink
+                to="/gallery"
+                className={({ isActive }) => `nav-more-item ${isActive ? 'active' : ''}`}
+              >
+                <FiImage aria-hidden="true" />
+                <span>Gallery</span>
+                <span className="wip-badge">WIP</span>
               </NavLink>
             </div>
           </div>
         </div>
 
         {/* Right Controls */}
-        <div className="navbar-right">
+        <div className="nav-controls">
           <button
             onClick={toggleTheme}
-            className="theme-toggle"
+            className="icon-btn"
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
@@ -95,8 +94,9 @@ export default function Navbar() {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="navbar-mobile-toggle"
+            className="icon-btn menu-btn"
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <FiX /> : <FiMenu />}
           </button>
@@ -104,38 +104,27 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Dropdown */}
-      <div className={`navbar-mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
         {navLinks.map((link) => (
           <NavLink
             key={link.path}
             to={link.path}
-            className={({ isActive }) =>
-              `navbar-mobile-link ${isActive ? 'active' : ''}`
-            }
+            className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}
             end={link.path === '/'}
           >
             {link.name}
           </NavLink>
         ))}
 
-        <div style={{ borderTop: '1px solid var(--border-light)', marginTop: 'var(--space-2)', paddingTop: 'var(--space-2)' }}>
-          <div style={{ padding: 'var(--space-2) var(--space-4)', fontSize: 'var(--fs-xs)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-tertiary)', fontWeight: 600 }}>
-            More
-          </div>
-          <NavLink
-            to="/gallery"
-            className={({ isActive }) =>
-              `navbar-mobile-link ${isActive ? 'active' : ''}`
-            }
-            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            <FiImage style={{ color: 'var(--primary)' }} />
-            <span>Gallery</span>
-            <span className="tag" style={{ fontSize: '10px', padding: '1px 6px', background: 'var(--tag-orange-bg)', color: 'var(--tag-orange-text)', marginLeft: 'auto' }}>
-              WIP
-            </span>
-          </NavLink>
-        </div>
+        <p className="mobile-group-label">More</p>
+        <NavLink
+          to="/gallery"
+          className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}
+        >
+          <FiImage aria-hidden="true" />
+          <span>Gallery</span>
+          <span className="wip-badge">WIP</span>
+        </NavLink>
       </div>
     </nav>
   );

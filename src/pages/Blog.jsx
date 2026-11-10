@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiClock, FiCalendar, FiSearch, FiHeart, FiEye } from 'react-icons/fi';
+import { FiClock, FiCalendar, FiHeart, FiEye } from 'react-icons/fi';
 import postsData from '../data/posts.json';
 import { useBlogListStats } from '../hooks/usePostLikes';
+import { PageHead, FilterBar } from '../components/Shared/PageHead';
 
 export default function Blog() {
   const navigate = useNavigate();
@@ -40,151 +41,102 @@ export default function Blog() {
       groups[year].push(post);
     });
 
-    // Sort within each year
     Object.keys(groups).forEach((year) => {
       groups[year].sort((a, b) => new Date(b.date) - new Date(a.date));
     });
 
-    // Return array of [year, posts] sorted by year descending
     return Object.entries(groups).sort(([yearA], [yearB]) => Number(yearB) - Number(yearA));
   }, [filteredPosts]);
 
+  const openPost = (slug) => navigate(`/blog/${slug}`);
+
   return (
-    <div
-      className="container"
-      style={{
-        paddingTop: 'calc(var(--navbar-height) + var(--space-8))',
-        paddingBottom: 'var(--space-20)',
-      }}
-    >
-      {/* Header */}
-      <div className="page-header">
-        <span className="section-label">Thoughts & Tutorials</span>
-        <h1>Posts</h1>
-        <p className="page-subtitle">
-          Writings on machine learning research, interview experiences, systems engineering, and technical tutorials.
-        </p>
-      </div>
+    <div className="container page">
+      <PageHead label="Thoughts & Tutorials" title="Posts">
+        Writings on machine learning research, interview experiences, systems engineering, and technical tutorials.
+      </PageHead>
 
-      {/* Filter and Search Bar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 'var(--space-4)',
-          marginBottom: 'var(--space-6)',
-        }}
-      >
-        <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--fs-sm)' }}>
-          Showing {filteredPosts.length} of {postsData.length} articles
-        </p>
+      <FilterBar
+        count={`Showing ${filteredPosts.length} of ${postsData.length} articles`}
+        query={searchQuery}
+        onQuery={setSearchQuery}
+        placeholder="Search articles..."
+        tags={allTags}
+        selected={selectedTag}
+        onSelect={setSelectedTag}
+      />
 
-        <div style={{ position: 'relative', minWidth: '240px' }}>
-          <FiSearch
-            style={{
-              position: 'absolute',
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--text-tertiary)',
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Search articles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px 8px 36px',
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--border)',
-              background: 'var(--surface)',
-              color: 'var(--text-primary)',
-              fontSize: 'var(--fs-sm)',
-              outline: 'none',
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Tag Filters */}
-      <div className="tag-filter">
-        <span className="tag-filter-label">Filter:</span>
-        {allTags.map((tag) => (
-          <button
-            key={tag}
-            onClick={() => setSelectedTag(tag)}
-            className={`tag tag-clickable ${selectedTag === tag ? 'tag-active' : ''}`}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
-
-      {/* Year-grouped Posts List */}
       {groupedByYear.length === 0 ? (
-        <div className="empty-state">
+        <div className="empty">
           <p>No articles match your search criteria.</p>
         </div>
       ) : (
         <div>
           {groupedByYear.map(([year, posts]) => (
-            <div key={year} className="blog-year-group">
-              <h3 className="blog-year-title">{year}</h3>
-              <div className="blog-list">
-                {posts.map((post) => (
-                  <div
-                    key={post.slug}
-                    className="card blog-card"
-                    onClick={() => navigate(`/blog/${post.slug}`)}
-                  >
-                    <div className="blog-card-meta">
-                      <span className="blog-card-date">
-                        <FiCalendar style={{ marginRight: '6px', verticalAlign: 'middle' }} />
-                        {post.date}
-                      </span>
-                      {post.readTime && (
-                        <span className="blog-card-readtime">
-                          <FiClock style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                          {post.readTime}
+            <section key={year} className="year-group" aria-label={`Posts from ${year}`}>
+              <h2 className="year-label">{year}</h2>
+              <div>
+                {posts.map((post) => {
+                  const views = (postStats[post.slug]?.views ?? 0).toLocaleString();
+                  const likes = (postStats[post.slug]?.likes ?? 0).toLocaleString();
+                  return (
+                    <article
+                      key={post.slug}
+                      className="post-row"
+                      role="link"
+                      tabIndex={0}
+                      onClick={() => openPost(post.slug)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') openPost(post.slug);
+                      }}
+                    >
+                      <div className="post-row-meta">
+                        <span>
+                          <FiCalendar aria-hidden="true" />
+                          {post.date}
                         </span>
-                      )}
-                      <div className="blog-card-stats">
-                        <span className="blog-card-stat-item" title={`${(postStats[post.slug]?.views ?? 0).toLocaleString()} views`}>
-                          <FiEye style={{ marginRight: '4px', verticalAlign: 'middle', color: 'var(--secondary)' }} />
-                          {(postStats[post.slug]?.views ?? 0).toLocaleString()}
-                        </span>
-                        <span className="blog-card-stat-item" title={`${(postStats[post.slug]?.likes ?? 0).toLocaleString()} likes`}>
-                          <FiHeart style={{ marginRight: '4px', verticalAlign: 'middle', color: 'var(--heart-color)' }} />
-                          {(postStats[post.slug]?.likes ?? 0).toLocaleString()}
+                        {post.readTime && (
+                          <span>
+                            <FiClock aria-hidden="true" />
+                            {post.readTime}
+                          </span>
+                        )}
+                        <span className="post-row-stats">
+                          <span title={`${views} views`}>
+                            <FiEye aria-hidden="true" />
+                            {views}
+                          </span>
+                          <span className="is-heart" title={`${likes} likes`}>
+                            <FiHeart aria-hidden="true" />
+                            {likes}
+                          </span>
                         </span>
                       </div>
-                    </div>
 
-                    <h4>{post.title}</h4>
-                    <p>{post.excerpt}</p>
+                      <h3 className="post-row-title">{post.title}</h3>
+                      <p className="post-row-excerpt">{post.excerpt}</p>
 
-                    <div className="blog-card-tags">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="tag"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTag(tag);
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                      <div className="chip-list post-row-tags">
+                        {post.tags.map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            className={`chip chip-button ${selectedTag === tag ? 'is-active' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTag(tag);
+                            }}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
-            </div>
+            </section>
           ))}
         </div>
       )}

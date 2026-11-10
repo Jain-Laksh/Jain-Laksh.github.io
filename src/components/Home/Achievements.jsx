@@ -24,28 +24,29 @@ export default function Achievements() {
   };
 
   return (
-    <section className="section section-alt">
+    <section className="section">
       <div className="container">
-        <div className="section-header">
-          <span className="section-label">Honors & Recognition</span>
-          <h2>Achievements</h2>
-          <p className="section-subtitle">
-            Academic honors, competitive milestones, and research recognitions.
-          </p>
-        </div>
+        <header className="section-head margin-grid">
+          <p className="margin-label">Honors & Recognition</p>
+          <div>
+            <h2>Achievements</h2>
+            <p className="section-lede">Academic honors, competitive milestones, and research recognitions.</p>
+          </div>
+        </header>
 
-        <div className="achievements-grid">
-          {achievementsData.map((item) => (
-            <div key={item.id} className="achievement-item">
-              <div className={`achievement-icon ${item.icon}`}>
-                {getIcon(item.icon)}
-              </div>
-              <div>
-                <p className="achievement-text">{item.title}</p>
-                <p className="achievement-year">{item.year}</p>
-              </div>
-            </div>
-          ))}
+        <div className="margin-grid">
+          <div aria-hidden="true" />
+          <ul className="honors">
+            {achievementsData.map((item) => (
+              <li key={item.id} className="honor">
+                <span className="honor-icon" aria-hidden="true">
+                  {getIcon(item.icon)}
+                </span>
+                <p className="honor-text">{item.title}</p>
+                <span className="honor-year">{item.year}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

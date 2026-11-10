@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { FaQuoteLeft } from 'react-icons/fa6';
 import { FiRefreshCw } from 'react-icons/fi';
 import quotesData from '../../data/quotes.json';
 
@@ -18,20 +17,18 @@ export default function RandomQuote() {
   const currentQuote = quotesData[index] || '';
 
   return (
-    <section className="quote-section">
-      <div className="container">
-        <div className="quote-icon">
-          <FaQuoteLeft />
-        </div>
-        <p className={`quote-text ${rotating ? 'fade-out' : ''}`}>
-          "{currentQuote}"
-        </p>
-        <div style={{ marginTop: 'var(--space-6)' }}>
+    <section className="quote">
+      <div className="container margin-grid">
+        <div aria-hidden="true" />
+        <div className="quote-inner">
+          <blockquote className={`quote-text ${rotating ? 'is-fading' : ''}`} aria-live="polite">
+            "{currentQuote}"
+          </blockquote>
           <button
+            type="button"
             onClick={nextQuote}
-            className="btn btn-ghost btn-sm"
+            className="btn btn-quiet btn-sm quote-btn"
             title="Get another quote"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
             <FiRefreshCw className={rotating ? 'spin' : ''} />
             <span>Another thought</span>
