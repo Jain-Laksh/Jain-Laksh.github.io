@@ -96,7 +96,7 @@ export default function Connect() {
 
   return (
     <div className="container page">
-      <PageHead label="Get in Touch" title="Connect & Curriculum Vitae">
+      <PageHead title="Connect & Curriculum Vitae">
         Feel free to reach out for research collaborations, engineering opportunities, or to discuss new ideas!
       </PageHead>
 

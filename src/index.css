@@ -203,22 +203,6 @@ h5 {
   padding-bottom: clamp(64px, 10vw, 120px);
 }
 
-/* Two-column scaffold: a narrow margin column for labels, a wide column for content */
-.margin-grid {
-  display: grid;
-  grid-template-columns: var(--margin-col) minmax(0, 1fr);
-  column-gap: clamp(24px, 4vw, 56px);
-}
-
-.margin-label {
-  font-family: var(--font-read);
-  font-style: italic;
-  font-size: var(--fs-16);
-  color: var(--ink-3);
-  line-height: 1.4;
-  padding-top: 0.35em;
-}
-
 /* ---------- Page header ---------- */
 .page-head {
   margin-bottom: clamp(40px, 6vw, 72px);
@@ -1056,12 +1040,6 @@ a.hero-callout:hover {
 /* ================================================================
    ABOUT
    ================================================================ */
-.about-grid {
-  display: grid;
-  grid-template-columns: var(--margin-col) minmax(0, 1fr);
-  column-gap: clamp(24px, 4vw, 56px);
-}
-
 .about-columns {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
@@ -2868,21 +2846,9 @@ a.hero-callout:hover {
     --nav-h: 60px;
   }
 
-  .margin-grid,
-  .about-grid,
   .tl-item,
   .year-group {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .margin-grid > [aria-hidden='true']:empty,
-  .about-grid > [aria-hidden='true']:empty {
-    display: none;
-  }
-
-  .margin-label {
-    padding-top: 0;
-    margin-bottom: 6px;
   }
 
   /* Hero: photo centred on top, text centred below */

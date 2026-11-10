@@ -8,8 +8,7 @@ export default function WorkSummary() {
   return (
     <section className="section">
       <div className="container">
-        <header className="section-head margin-grid">
-          <p className="margin-label">Experience</p>
+        <header className="section-head">
           <div className="section-head-row">
             <div>
               <h2>Work Experience</h2>
@@ -21,8 +20,7 @@ export default function WorkSummary() {
           </div>
         </header>
 
-        <div className="margin-grid">
-          <div aria-hidden="true" />
+        <div>
           <ul className="work-rows">
             {displayWork.map((item) => (
               <li key={item.id} className="work-row">

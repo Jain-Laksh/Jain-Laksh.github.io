@@ -15,8 +15,7 @@ export default function FeaturedProjects() {
   return (
     <section className="section">
       <div className="container">
-        <header className="section-head margin-grid">
-          <p className="margin-label">Engineering</p>
+        <header className="section-head">
           <div className="section-head-row">
             <div>
               <h2>Featured Projects</h2>

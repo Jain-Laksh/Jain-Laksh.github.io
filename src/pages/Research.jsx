@@ -61,13 +61,12 @@ export default function Research() {
 
   return (
     <div className="container page">
-      <PageHead label="Academic Portfolio" title="Research">
+      <PageHead title="Research">
         My primary research focus is in efficient machine learning, multi-modal systems, and responsible AI.
       </PageHead>
 
       {/* Research Interests */}
-      <section className="research-block margin-grid">
-        <div aria-hidden="true" />
+      <section className="research-block">
         <div>
           <h2 className="block-title">Research Interests</h2>
           <ul className="interests">
@@ -84,8 +83,7 @@ export default function Research() {
       </section>
 
       {/* Research Background */}
-      <section className="research-block margin-grid">
-        <div aria-hidden="true" />
+      <section className="research-block">
         <div>
           <h2 className="block-title">Research Statement</h2>
           <div className="essay">
@@ -99,8 +97,7 @@ export default function Research() {
       </section>
 
       {/* Publications Section */}
-      <section className="research-block margin-grid">
-        <div aria-hidden="true" />
+      <section className="research-block">
         <div>
           <h2 className="block-title">Publications</h2>
           <FilterBar
@@ -128,8 +125,7 @@ export default function Research() {
       </section>
 
       {/* Connect CTA */}
-      <section className="margin-grid">
-        <div aria-hidden="true" />
+      <section>
         <div className="cta-block">
           <h2>Interested in Research Collaboration?</h2>
           <p>

@@ -98,7 +98,7 @@ export default function Blog() {
 
   return (
     <div className="container page">
-      <PageHead label="Thoughts & Tutorials" title="Posts">
+      <PageHead title="Posts">
         Writings on machine learning research, interview experiences, systems engineering, and technical tutorials.
       </PageHead>
 

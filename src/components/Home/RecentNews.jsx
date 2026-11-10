@@ -28,16 +28,14 @@ export default function RecentNews() {
   return (
     <section className="section">
       <div className="container">
-        <header className="section-head margin-grid">
-          <p className="margin-label">Updates</p>
+        <header className="section-head">
           <div>
             <h2>Recent News</h2>
             <p className="section-lede">Latest milestones, publications, and announcements.</p>
           </div>
         </header>
 
-        <div className="margin-grid">
-          <div aria-hidden="true" />
+        <div>
           <div>
             <ul className="news-list">
               {recentNews.map((item) => (

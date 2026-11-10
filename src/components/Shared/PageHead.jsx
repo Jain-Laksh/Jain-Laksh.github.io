@@ -1,14 +1,11 @@
 import React from 'react';
 import { FiSearch } from 'react-icons/fi';
 
-export function PageHead({ label, title, children }) {
+export function PageHead({ title, children }) {
   return (
-    <header className="page-head margin-grid">
-      <p className="margin-label">{label}</p>
-      <div>
-        <h1>{title}</h1>
-        {children && <p className="page-lede">{children}</p>}
-      </div>
+    <header className="page-head">
+      <h1>{title}</h1>
+      {children && <p className="page-lede">{children}</p>}
     </header>
   );
 }

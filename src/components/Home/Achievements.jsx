@@ -26,16 +26,14 @@ export default function Achievements() {
   return (
     <section className="section">
       <div className="container">
-        <header className="section-head margin-grid">
-          <p className="margin-label">Honors & Recognition</p>
+        <header className="section-head">
           <div>
             <h2>Achievements</h2>
             <p className="section-lede">Academic honors, competitive milestones, and research recognitions.</p>
           </div>
         </header>
 
-        <div className="margin-grid">
-          <div aria-hidden="true" />
+        <div>
           <ul className="honors">
             {achievementsData.map((item) => (
               <li key={item.id} className="honor">

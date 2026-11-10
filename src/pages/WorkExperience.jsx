@@ -6,7 +6,7 @@ import { PageHead } from '../components/Shared/PageHead';
 export default function WorkExperience() {
   return (
     <div className="container page">
-      <PageHead label="Career & Industry" title="Work Experience">
+      <PageHead title="Work Experience">
         My professional roles, research fellowships, and industry internships in AI and software engineering.
       </PageHead>
 

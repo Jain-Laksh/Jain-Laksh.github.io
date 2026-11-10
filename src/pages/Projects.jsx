@@ -26,7 +26,7 @@ export default function Projects() {
 
   return (
     <div className="container page">
-      <PageHead label="Engineering & Open Source" title="Projects">
+      <PageHead title="Projects">
         A showcase of software systems, machine learning pipelines, and experimental applications I've built.
       </PageHead>
 

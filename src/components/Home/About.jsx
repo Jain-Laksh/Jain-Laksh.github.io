@@ -46,8 +46,7 @@ export default function About() {
   return (
     <section id="about" className="section">
       <div className="container">
-        <header className="section-head margin-grid">
-          <p className="margin-label">Background</p>
+        <header className="section-head">
           <div>
             <h2>About Me</h2>
             <p className="section-lede">
@@ -56,8 +55,7 @@ export default function About() {
           </div>
         </header>
 
-        <div className="about-grid">
-          <div aria-hidden="true" />
+        <div>
           <div className="about-columns">
             {/* Narrative & Tags */}
             <div className="about-body">

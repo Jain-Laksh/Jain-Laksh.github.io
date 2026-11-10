@@ -9,8 +9,7 @@ export default function FeaturedPublications() {
   return (
     <section className="section">
       <div className="container">
-        <header className="section-head margin-grid">
-          <p className="margin-label">Research</p>
+        <header className="section-head">
           <div className="section-head-row">
             <div>
               <h2>Recent Publications</h2>
@@ -22,8 +21,7 @@ export default function FeaturedPublications() {
           </div>
         </header>
 
-        <div className="margin-grid">
-          <div aria-hidden="true" />
+        <div>
           <div>
             {featured.map((pub) => (
               <PublicationEntry key={pub.id} pub={pub} />

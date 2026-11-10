@@ -12,12 +12,11 @@ export default function Gallery() {
         <span>Back to Home</span>
       </Link>
 
-      <PageHead label="Visual Journal" title="Gallery">
+      <PageHead title="Gallery">
         Curated photos and visual highlights from academia, competitions, and life.
       </PageHead>
 
-      <div className="margin-grid">
-        <div aria-hidden="true" />
+      <div>
         <div className="wip-panel">
           <div className="wip-frames" aria-hidden="true">
             <span />

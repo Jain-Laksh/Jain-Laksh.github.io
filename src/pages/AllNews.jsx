@@ -14,12 +14,11 @@ export default function AllNews() {
         <span>Back to Home</span>
       </Link>
 
-      <PageHead label="Archive" title="All News & Updates">
+      <PageHead title="All News & Updates">
         A complete chronological timeline of announcements, research publications, awards, and life milestones.
       </PageHead>
 
-      <div className="margin-grid">
-        <div aria-hidden="true" />
+      <div>
         <ul className="news-list">
           {sortedNews.map((item) => (
             <NewsRow key={item.id} item={item} />

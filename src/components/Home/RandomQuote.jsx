@@ -18,8 +18,7 @@ export default function RandomQuote() {
 
   return (
     <section className="quote">
-      <div className="container margin-grid">
-        <div aria-hidden="true" />
+      <div className="container">
         <div className="quote-inner">
           <blockquote className={`quote-text ${rotating ? 'is-fading' : ''}`} aria-live="polite">
             "{currentQuote}"
