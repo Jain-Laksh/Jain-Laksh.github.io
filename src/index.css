@@ -1947,7 +1947,6 @@ a.hero-callout:hover {
 .markdown-body h4 {
   font-family: var(--font-display);
   color: var(--ink);
-  scroll-margin-top: calc(var(--nav-h) + 24px);
 }
 
 .markdown-body h1 {

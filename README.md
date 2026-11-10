@@ -15,7 +15,6 @@ A modern, responsive portfolio website built with **React 18**, **Vite**, and **
   - Featured peer-reviewed publications
   - Featured engineering projects
   - Achievements and honors
-  - Interactive Visitor Traffic map & real-time counter
   - Rotating random thought/quote widget
 - **Research Tab**: Research interests with custom icons, research background narrative, searchable & tag-filterable publication catalog (paper, code, and slide links), and a collaboration CTA.
 - **Projects Tab**: Square grid cards with GitHub about-section tags, GitHub repo links, live demo links, and report links. Searchable and filterable.
@@ -50,12 +49,11 @@ npm run build
 ```
 
 ### 4. Deploy to GitHub Pages
-The project is pre-configured with `gh-pages` and `HashRouter` for zero-configuration GitHub Pages hosting:
-1. In `vite.config.js`, set `base: '/<your-repo-name>/'` (or `'/'` if your repo is `username.github.io`).
-2. Run:
-```bash
-npm run deploy
-```
+Push to `main`. The GitHub Actions workflow in `.github/workflows/deploy.yml` builds the site and publishes it to https://jain-laksh.github.io.
+
+The site uses clean URLs (`/blog/my-post`, not `/#/blog/my-post`). The build writes a separate HTML file for every page and post, each with its own title, description and link-preview image, plus `404.html`, `sitemap.xml` and `robots.txt`. Old `/#/...` links redirect automatically. To preview the production build locally, run `npm run build` then `npm run preview`.
+
+If the site's address changes, update `SITE_URL` in `vite.config.js` and the URLs in `index.html`. Page titles and descriptions live in `src/data/pages.json`; the link-preview image is `public/og-image.png` (1200×630).
 
 ---
 
@@ -75,7 +73,7 @@ All data is decoupled into simple JSON files under `src/data/`. You never need t
 | `public/posts/*.md` | Blog posts — each file holds its own title, date, tags and excerpt (see below) |
 
 ### Adding a New Blog Post:
-Create one file, `public/posts/my-new-post.md`. The file name becomes the URL (`/#/blog/my-new-post`), so use lowercase words separated by hyphens. Start it with a frontmatter block:
+Create one file, `public/posts/my-new-post.md`. The file name becomes the URL (`/blog/my-new-post`), so use lowercase words separated by hyphens. Start it with a frontmatter block:
 
 ```markdown
 ---

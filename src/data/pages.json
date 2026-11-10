@@ -1,0 +1,34 @@
+{
+  "/": {
+    "title": "Laksh Jain",
+    "description": "Laksh Jain: AI researcher and software engineer. Senior undergraduate in AI at IIT Gandhinagar, incoming SDE at Eternal. Research, projects, and interview experiences."
+  },
+  "/research": {
+    "title": "Research",
+    "description": "Research by Laksh Jain on vision-language models, multimodal reasoning, model compression, and AI explainability, including ThermEval (KDD 2026)."
+  },
+  "/projects": {
+    "title": "Projects",
+    "description": "Software systems, machine learning pipelines, and experimental applications built by Laksh Jain."
+  },
+  "/work": {
+    "title": "Work Experience",
+    "description": "Laksh Jain's professional roles, research internships, and teaching experience in AI and software engineering."
+  },
+  "/blog": {
+    "title": "Posts",
+    "description": "Interview experiences and writing by Laksh Jain on machine learning, software engineering, and systems."
+  },
+  "/connect": {
+    "title": "Connect & CV",
+    "description": "Contact Laksh Jain by email or social media, and view or download the CV."
+  },
+  "/news": {
+    "title": "All News & Updates",
+    "description": "A timeline of announcements, publications, awards, and milestones from Laksh Jain."
+  },
+  "/gallery": {
+    "title": "Gallery",
+    "description": "Photos from research conferences, campus, and projects. Coming soon."
+  }
+}

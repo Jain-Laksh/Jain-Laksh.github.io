@@ -9,6 +9,11 @@ import { PageHead } from '../components/Shared/PageHead';
 import { copyText } from '../lib/format';
 
 // Browsers that can't show PDFs inline (most phones) report pdfViewerEnabled === false
+// Set at build time from the CV's last git commit (see vite.config.js)
+const cvUpdated = import.meta.env.VITE_CV_UPDATED
+  ? new Date(`${import.meta.env.VITE_CV_UPDATED}T00:00:00`).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  : '';
+
 const canEmbedPdf = typeof navigator === 'undefined' || navigator.pdfViewerEnabled !== false;
 
 function EmailRow({ name, address, icon }) {
@@ -117,7 +122,10 @@ export default function Connect() {
         <div className="cv-head">
           <div>
             <h2 id="cv-title">Curriculum Vitae</h2>
-            <p className="cv-sub">Academic & Professional Profile, updated 2026</p>
+            <p className="cv-sub">
+              Academic & Professional Profile
+              {cvUpdated && <>, updated {cvUpdated}</>}
+            </p>
           </div>
 
           <div className="cv-controls">

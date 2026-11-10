@@ -26,3 +26,6 @@ Thumbs.db
 Resumes-tex-files/
 resume-tex-files/
 
+
+# Personal files kept locally, never published
+private/
