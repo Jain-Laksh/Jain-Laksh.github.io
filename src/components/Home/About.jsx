@@ -84,12 +84,6 @@ export default function About() {
                   <dd>{f.value}</dd>
                 </div>
               ))}
-              <div className="fact">
-                <dt>Status</dt>
-                <dd>
-                  <span className="fact-status">{profileData.status || 'Upcoming SDE @ Eternal'}</span>
-                </dd>
-              </div>
             </dl>
           </div>
         </div>

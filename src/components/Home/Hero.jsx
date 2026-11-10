@@ -112,12 +112,6 @@ export default function Hero() {
                 <div className="hero-photo-placeholder">{profileData.initials || 'YN'}</div>
               )}
             </div>
-            {profileData.status && (
-              <p className="hero-status">
-                <span className="live-dot" aria-hidden="true" />
-                {profileData.status}
-              </p>
-            )}
           </div>
 
           {/* Text & CTAs */}

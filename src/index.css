@@ -948,27 +948,6 @@ h5 {
   color: var(--ink-3);
 }
 
-/* Live status pinned to the photo */
-.hero-status {
-  position: absolute;
-  left: -16px;
-  bottom: 28px;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 14px 10px 12px;
-  border-radius: var(--r-md);
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  box-shadow: 0 10px 30px -12px rgba(28, 21, 48, 0.35);
-  font-family: var(--font-display);
-  font-size: var(--fs-14);
-  font-weight: 650;
-  color: var(--ink);
-  white-space: nowrap;
-  animation: hero-fade-in 700ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both;
-}
-
 .live-dot {
   position: relative;
   width: 8px;
@@ -1133,21 +1112,6 @@ a.hero-callout:hover {
   font-weight: 600;
   color: var(--ink);
   line-height: 1.4;
-}
-
-.fact-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--ok) !important;
-}
-
-.fact-status::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
 }
 
 /* ================================================================
@@ -2945,12 +2909,6 @@ a.hero-callout:hover {
     box-shadow: 8px 8px 0 0 var(--plate);
   }
 
-  .hero-status {
-    left: 50%;
-    bottom: -18px;
-    transform: translateX(-50%);
-    animation-name: hero-status-in;
-  }
 
   .hero-name {
     margin-left: 0;
@@ -3056,11 +3014,6 @@ a.hero-callout:hover {
   .page-head {
     margin-bottom: 36px;
   }
-}
-
-@keyframes hero-status-in {
-  from { opacity: 0; transform: translate(-50%, 10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 @media (max-width: 560px) {
