@@ -47,5 +47,4 @@ The interview focused on modern C++ programming mechanics, discrete mathematics,
 
 ## Outcome
 
-- **Status**: **Reached Final Round**
 - **Verdict**: Was not selected.
